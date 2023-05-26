@@ -9,7 +9,17 @@ use secret::secret::secret;
 
 mod common;
 
+mod db;
+use db::db as database;
+
 fn main() {
+    let conn = database::connect();
+
+    if conn.is_err() {
+        println!("Error connecting to database: {}", conn.err().unwrap());
+        return;
+    }
+
     let args = std::env::args().collect::<Vec<String>>();
 
     if args.len() < 2 {
