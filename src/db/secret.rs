@@ -18,10 +18,9 @@ impl Secret {
         let mut values = Vec::new();
 
         let mut stmt = conn.prepare(
-            "SELECT id, name FROM secrets WHERE vault_id = (SELECT id from vaults where name = ?)",
+            "SELECT id, name FROM secrets WHERE vault_id = (SELECT id from vaults where name = ? LIMIT 1)",
         )?;
 
-        println!("Vault: {}", self.vault);
         let rows = stmt.query_map(params![self.vault], |row| Ok((row.get(0)?, row.get(1)?)))?;
 
         for row in rows {
@@ -64,15 +63,27 @@ impl Secret {
         }
     }
 
-    pub fn db_update(&self, args: &[&str]) -> Result<usize, Box<dyn Error>> {
-        println!("Secret update: {:?}", args);
-
-        Ok(0)
-    }
-
     pub fn db_delete(&self, args: &[&str]) -> Result<usize, Box<dyn Error>> {
         println!("Secret delete: {:?}", args);
 
         Ok(0)
+    }
+
+    pub fn db_get(&self) -> Result<Vec<String>, Box<dyn Error>> {
+        let conn = connect()?;
+
+        let mut stmt = conn.prepare(
+            "SELECT value FROM secrets WHERE name = ? AND vault_id = (SELECT id FROM vaults WHERE name = ? LIMIT 1)",
+        )?;
+
+        let mut values = Vec::new();
+
+        let rows = stmt.query_map(params![self.name, self.vault], |row| Ok(row.get(0)?))?;
+
+        for row in rows {
+            values.push(row?);
+        }
+
+        Ok(values)
     }
 }

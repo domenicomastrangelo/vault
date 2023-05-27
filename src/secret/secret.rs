@@ -20,7 +20,7 @@ pub fn secret(args: &[&str]) {
         "create" => secret.create(&args[1..]),
         "delete" => secret.delete(&args[1..]),
         "list" => secret.list(),
-        "update" => secret.update(&args[1..]),
+        "get" => secret.get(),
         _ => println!("Unknown command: {}", args[0]),
     }
 }
@@ -63,14 +63,14 @@ impl secret::Secret {
         }
     }
 
-    fn update(&self, args: &[&str]) {
-        println!("Secret update: {:?}", args);
+    fn get(&self) {
+        println!("Reading secret {}", self.name);
 
-        let res = self.db_update(args);
+        let res = self.db_get();
 
         match res {
-            Ok(_) => println!("Secret updated"),
-            Err(e) => println!("Error updating secret: {}", e),
+            Ok(data) => data.iter().for_each(|d| println!("{}", d)),
+            Err(e) => println!("Error reading secret {}", e),
         }
     }
 }
