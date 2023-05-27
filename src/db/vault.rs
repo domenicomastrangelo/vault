@@ -48,16 +48,27 @@ impl RecordDatabaseTrait for Vault {
         }
     }
 
-    fn db_read(&self, arg: &str) -> Result<usize, Box<dyn Error>> {
-        println!("Vault read {:?}", arg);
+    fn db_update(&self, args: &[&str]) -> Result<usize, Box<dyn Error>> {
+        if args.len() != 2 {
+            let ee = IoError::new(std::io::ErrorKind::Other, "Usage: vault update <old_name> <new_name>");
+            return Err(Box::new(ee))
+        }
 
-        Ok(0)
-    }
+        let conn = connect()?;
 
-    fn db_update(&self, arg: &str) -> Result<usize, Box<dyn Error>> {
-        println!("Vault update {:?}", arg);
+        let res = conn.execute("UPDATE vaults SET name = ? WHERE name = ?", params![args[1], args[0]]);
 
-        Ok(0)
+        match res {
+            Ok(size) => Ok(size),
+            Err(e) => {
+                if e.to_string().contains("UNIQUE constraint failed") {
+                    let ee = IoError::new(std::io::ErrorKind::Other, format!("A vault with the name {} already exists", args[1]));
+                    return Err(Box::new(ee))
+                } else {
+                    return Err(Box::new(e))
+                }
+            }
+        }
     }
 
     fn db_delete(&self, arg: &str) -> Result<usize, Box<dyn Error>> {

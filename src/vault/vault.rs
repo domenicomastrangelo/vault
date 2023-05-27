@@ -47,7 +47,7 @@ impl RecordTrait for vault::Vault {
     }
 
     fn create(&self, args: &[&str]) {
-        println!("Creating vault {:?}", args[0]);
+        println!("Creating vault {}", args[0]);
         let res = self.db_create(args[0]);
 
         match res {
@@ -57,7 +57,13 @@ impl RecordTrait for vault::Vault {
     }
 
     fn update(&self, args: &[&str]) {
-        println!("Vault update {:?}", args);
+        println!("Updating vault {}", args[0]);
+        let res = self.db_update(args);
+
+        match res {
+            Ok(_) => println!("Vault updated"),
+            Err(e) => println!("Error updating vault: {}", e),
+        }
     }
 
     fn delete(&self, args: &[&str]) {
