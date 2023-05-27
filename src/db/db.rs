@@ -1,4 +1,4 @@
-use rusqlite::{Result, params};
+use rusqlite::{params, Result};
 
 use r2d2::{Pool, PooledConnection};
 use r2d2_sqlite::SqliteConnectionManager;
@@ -18,7 +18,7 @@ pub fn connect() -> Result<PooledConnection<SqliteConnectionManager>, Box<dyn Er
             name VARCHAR(255) NOT NULL,
             UNIQUE(name)
         )",
-        params![]
+        params![],
     )?;
 
     conn.execute(

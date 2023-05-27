@@ -1,4 +1,4 @@
-use crate::common::record_trait::{RecordTrait, RecordDatabaseTrait};
+use crate::common::record_trait::{RecordDatabaseTrait, RecordTrait};
 use crate::db::vault;
 
 pub fn vault(args: &[&str]) {
@@ -41,7 +41,7 @@ impl RecordTrait for vault::Vault {
                 for vault in vaults {
                     println!("Vault: {}", vault.1);
                 }
-            },
+            }
             Err(e) => println!("Error listing vaults: {}", e),
         }
     }
@@ -68,7 +68,7 @@ impl RecordTrait for vault::Vault {
 
     fn delete(&self, args: &[&str]) {
         print!("Deleting vaults: ");
-        args.iter().for_each(|arg| {print!("{} ", arg)});
+        args.iter().for_each(|arg| print!("{} ", arg));
         println!();
 
         match self.db_delete(args) {

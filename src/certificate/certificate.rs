@@ -7,7 +7,9 @@ pub struct Certificate {
 
 pub fn certificate(args: &[&str]) {
     if args.len() < 2 {
-        println!("Usage: certificate [create,delete,list,read,update] [rsa, ecdsa] <certificate name>");
+        println!(
+            "Usage: certificate [create,delete,list,read,update] [rsa, ecdsa] <certificate name>"
+        );
         return;
     }
 

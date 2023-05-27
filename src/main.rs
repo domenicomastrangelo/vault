@@ -36,4 +36,3 @@ fn main() {
         _ => println!("Unknown command: {}", args[1]),
     }
 }
-
