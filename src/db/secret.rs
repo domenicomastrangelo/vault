@@ -63,10 +63,22 @@ impl Secret {
         }
     }
 
-    pub fn db_delete(&self, args: &[&str]) -> Result<usize, Box<dyn Error>> {
-        println!("Secret delete: {:?}", args);
+    pub fn db_delete(&self) -> Result<usize, Box<dyn Error>> {
+        let conn = connect()?;
 
-        Ok(0)
+        let res = conn.execute("DELETE FROM secrets where name = ?", params![self.name]);
+
+        match res {
+            Ok(size) if size > 0 => Ok(size),
+            Ok(_) => Err(Box::new(IoError::new(
+                std::io::ErrorKind::Other,
+                "Secret was not deleted, double check the name",
+            ))),
+            Err(_) => Err(Box::new(IoError::new(
+                std::io::ErrorKind::Other,
+                "There's been an error deleting the secret",
+            ))),
+        }
     }
 
     pub fn db_get(&self) -> Result<Vec<String>, Box<dyn Error>> {

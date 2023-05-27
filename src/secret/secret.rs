@@ -40,7 +40,7 @@ impl secret::Secret {
     fn delete(&self, args: &[&str]) {
         println!("Secret delete: {:?}", args);
 
-        let res = self.db_delete(args);
+        let res = self.db_delete();
 
         match res {
             Ok(_) => println!("Secret deleted"),
