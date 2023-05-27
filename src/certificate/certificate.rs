@@ -16,7 +16,6 @@ pub fn certificate(args: &[&str]) {
             "create" => println!("Certificate create: {:?}", args),
             "delete" => println!("Certificate delete: {:?}", args),
             "list" => println!("Certificate list: {:?}", args),
-            "read" => println!("Certificate read: {:?}", args),
             "update" => println!("Certificate update: {:?}", args),
             _ => println!("Unknown command: {}", arg),
         }
@@ -34,10 +33,6 @@ impl RecordTrait for Certificate {
 
     fn list(&self) {
         println!("Listing certificates");
-    }
-
-    fn read(&self, args: &[&str]) {
-        println!("Certificate read: {:?}", args);
     }
 
     fn update(&self, args: &[&str]) {

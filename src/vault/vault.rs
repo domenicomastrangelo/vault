@@ -26,7 +26,6 @@ pub fn vault(args: &[&str]) {
     match args[0] {
         "create" => vault.create(&args[1..]),
         "delete" => vault.delete(&args[1..]),
-        "read" => vault.read(&args[1..]),
         "update" => vault.update(&args[1..]),
         _ => println!("Unknown command: {}", args[0]),
     }
@@ -57,10 +56,6 @@ impl RecordTrait for vault::Vault {
         }
     }
 
-    fn read(&self, args: &[&str]) {
-        println!("Vault read {:?}", args);
-    }
-
     fn update(&self, args: &[&str]) {
         println!("Vault update {:?}", args);
     }
@@ -69,4 +64,3 @@ impl RecordTrait for vault::Vault {
         println!("Vault delete {:?}", args);
     }
 }
-
