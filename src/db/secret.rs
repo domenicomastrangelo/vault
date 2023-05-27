@@ -17,7 +17,9 @@ impl Secret {
         let conn = connect()?;
         let mut values = Vec::new();
 
-        let mut stmt = conn.prepare("SELECT id, name FROM secrets WHERE vault_id = (SELECT id from vaults where name = ?)")?;
+        let mut stmt = conn.prepare(
+            "SELECT id, name FROM secrets WHERE vault_id = (SELECT id from vaults where name = ?)",
+        )?;
 
         println!("Vault: {}", self.vault);
         let rows = stmt.query_map(params![self.vault], |row| Ok((row.get(0)?, row.get(1)?)))?;
@@ -29,7 +31,7 @@ impl Secret {
         Ok(values)
     }
 
-    pub fn db_create(&self, vault_name: &str, secret_name: &str) -> Result<usize, Box<dyn Error>> {
+    pub fn db_create(&self) -> Result<usize, Box<dyn Error>> {
         let mut value = String::new();
 
         println!("Enter secret value: ");
@@ -42,7 +44,7 @@ impl Secret {
 
         let res = conn.execute(
             "INSERT INTO secrets('name', 'value', 'vault_id') values(?, ?, (SELECT id FROM vaults WHERE name = ? LIMIT 1))",
-            params![secret_name, value, vault_name],
+            params![self.name, value, self.vault],
         );
 
         match res {

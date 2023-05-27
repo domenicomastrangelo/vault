@@ -29,7 +29,7 @@ impl secret::Secret {
     fn create(&self, args: &[&str]) {
         println!("Creating secret: {:?}", args[1]);
 
-        let res = self.db_create(&args[0], args[1]);
+        let res = self.db_create();
 
         match res {
             Ok(_) => println!("Secret created"),
