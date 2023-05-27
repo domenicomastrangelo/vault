@@ -3,8 +3,19 @@ use crate::db::vault;
 
 pub fn vault(args: &[&str]) {
     if args.len() < 2 {
-        println!("Usage: vault [create,delete,list,read,update] <vault name>");
-        return;
+        if args[0] == "list" {
+            let vault = vault::Vault {
+                name: "".to_string(),
+                id: 0,
+            };
+
+            vault.list();
+
+            return;
+        } else {
+            println!("Usage: vault [create,delete,list,read,update] <vault name>");
+            return;
+        }
     }
 
     let vault = vault::Vault {
@@ -15,7 +26,6 @@ pub fn vault(args: &[&str]) {
     match args[0] {
         "create" => vault.create(&args[1..]),
         "delete" => vault.delete(&args[1..]),
-        "list" => vault.list(&args[1..]),
         "read" => vault.read(&args[1..]),
         "update" => vault.update(&args[1..]),
         _ => println!("Unknown command: {}", args[0]),
@@ -23,8 +33,18 @@ pub fn vault(args: &[&str]) {
 }
 
 impl RecordTrait for vault::Vault {
-    fn list(&self, args: &[&str]) {
-        println!("Vault list {:?}", args);
+    fn list(&self) {
+        println!("Listing vaults");
+        let res = self.db_list();
+
+        match res {
+            Ok(vaults) => {
+                for vault in vaults {
+                    println!("Vault: {}", vault.1);
+                }
+            },
+            Err(e) => println!("Error listing vaults: {}", e),
+        }
     }
 
     fn create(&self, args: &[&str]) {

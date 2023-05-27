@@ -13,10 +13,21 @@ pub struct Vault {
 }
 
 impl RecordDatabaseTrait for Vault {
-    fn db_list(&self, arg: &str) -> Result<usize, Box<dyn Error>> {
-        println!("Vault list {:?}", arg);
+    fn db_list(&self) -> Result<Vec<(u64, String)>, Box<dyn Error>> {
+        let conn = connect()?;
+        let mut values = Vec::new();
 
-        Ok(0)
+        let mut stmt = conn.prepare("SELECT id, name FROM vaults")?;
+
+        let rows = stmt.query_map(params![], |row| {
+            Ok((row.get(0)?, row.get(1)?))
+        })?;
+
+        for row in rows {
+            values.push(row?);
+        }
+
+        Ok(values)
     }
 
     fn db_create(&self, arg: &str) -> Result<usize, Box<dyn Error>> {

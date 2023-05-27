@@ -19,7 +19,7 @@ pub fn secret(args: &[&str]) {
     match args[0] {
         "create" => secret.create(&args[1..]),
         "delete" => secret.delete(&args[1..]),
-        "list" => secret.list(&args[1..]),
+        "list" => secret.list(),
         "read" => secret.read(&args[1..]),
         "update" => secret.update(&args[1..]),
         _ => println!("Unknown command: {}", args[0]),
@@ -35,8 +35,8 @@ impl RecordTrait for Secret {
         println!("Secret delete: {:?}", args);
     }
 
-    fn list(&self, args: &[&str]) {
-        println!("Secret list: {:?}", args);
+    fn list(&self) {
+        println!("Listing secrets");
     }
 
     fn read(&self, args: &[&str]) {

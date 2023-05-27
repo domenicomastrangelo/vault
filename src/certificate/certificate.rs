@@ -32,8 +32,8 @@ impl RecordTrait for Certificate {
         println!("Certificate delete: {:?}", args);
     }
 
-    fn list(&self, args: &[&str]) {
-        println!("Certificate list: {:?}", args);
+    fn list(&self) {
+        println!("Listing certificates");
     }
 
     fn read(&self, args: &[&str]) {
