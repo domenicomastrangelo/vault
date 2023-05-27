@@ -14,9 +14,19 @@ pub struct Secret {
 
 impl Secret {
     pub fn db_list(&self) -> Result<Vec<(u64, String)>, Box<dyn Error>> {
-        println!("Listing secrets");
+        let conn = connect()?;
+        let mut values = Vec::new();
 
-        Ok(vec![(0, "test".to_string())])
+        let mut stmt = conn.prepare("SELECT id, name FROM secrets WHERE vault_id = (SELECT id from vaults where name = ?)")?;
+
+        println!("Vault: {}", self.vault);
+        let rows = stmt.query_map(params![self.vault], |row| Ok((row.get(0)?, row.get(1)?)))?;
+
+        for row in rows {
+            values.push(row?);
+        }
+
+        Ok(values)
     }
 
     pub fn db_create(&self, vault_name: &str, secret_name: &str) -> Result<usize, Box<dyn Error>> {

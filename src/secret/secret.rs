@@ -6,11 +6,15 @@ pub fn secret(args: &[&str]) {
         return;
     }
 
-    let secret = secret::Secret {
-        name: args[1].to_string(),
-        value: args[2].to_string(),
-        vault: args[0].to_string(),
+    let mut secret = secret::Secret {
+        name: "".to_owned(),
+        value: "".to_owned(),
+        vault: args[1].to_string(),
     };
+
+    if args.len() >= 3 {
+        secret.name = args[2].to_string();
+    }
 
     match args[0] {
         "create" => secret.create(&args[1..]),
