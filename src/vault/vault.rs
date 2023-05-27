@@ -71,6 +71,21 @@ impl RecordTrait for vault::Vault {
         args.iter().for_each(|arg| print!("{} ", arg));
         println!();
 
+        println!("This will delete all secrets and certiticates in the vaults");
+
+        println!("Are you sure? (y/N)");
+
+        let mut input = String::new();
+
+        std::io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read line");
+
+        if input.trim() != "y" {
+            println!("Aborting");
+            return;
+        }
+
         match self.db_delete(args) {
             Ok(_) => println!("Vaults deleted"),
             Err(e) => println!("Error deleting vaults: {}", e),
