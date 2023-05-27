@@ -1,5 +1,3 @@
-use crate::common::record_trait::RecordTrait;
-
 pub struct Certificate {
     pub name: String,
     pub data: String,
@@ -24,13 +22,9 @@ pub fn certificate(args: &[&str]) {
     }
 }
 
-impl RecordTrait for Certificate {
+impl Certificate {
     fn create(&self, args: &[&str]) {
         println!("Certificate create: {:?}", args);
-    }
-
-    fn delete(&self, args: &[&str]) {
-        println!("Certificate delete: {:?}", args);
     }
 
     fn list(&self) {
@@ -39,5 +33,9 @@ impl RecordTrait for Certificate {
 
     fn update(&self, args: &[&str]) {
         println!("Certificate update: {:?}", args);
+    }
+
+    fn delete(&self, args: &[&str]) {
+        println!("Certificate delete: {:?}", args);
     }
 }

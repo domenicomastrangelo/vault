@@ -7,8 +7,6 @@ use vault::vault::vault;
 mod secret;
 use secret::secret::secret;
 
-mod common;
-
 mod db;
 use db::db as database;
 

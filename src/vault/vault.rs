@@ -1,4 +1,3 @@
-use crate::common::record_trait::{RecordDatabaseTrait, RecordTrait};
 use crate::db::vault;
 
 pub fn vault(args: &[&str]) {
@@ -31,7 +30,7 @@ pub fn vault(args: &[&str]) {
     }
 }
 
-impl RecordTrait for vault::Vault {
+impl vault::Vault {
     fn list(&self) {
         println!("Listing vaults");
         let res = self.db_list();

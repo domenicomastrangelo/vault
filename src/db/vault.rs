@@ -1,7 +1,5 @@
 use rusqlite::params;
 
-use crate::common::record_trait::RecordDatabaseTrait;
-
 use super::db::connect;
 
 use std::error::Error;
@@ -12,8 +10,8 @@ pub struct Vault {
     pub id: u64,
 }
 
-impl RecordDatabaseTrait for Vault {
-    fn db_list(&self) -> Result<Vec<(u64, String)>, Box<dyn Error>> {
+impl Vault {
+    pub fn db_list(&self) -> Result<Vec<(u64, String)>, Box<dyn Error>> {
         let conn = connect()?;
         let mut values = Vec::new();
 
@@ -28,7 +26,7 @@ impl RecordDatabaseTrait for Vault {
         Ok(values)
     }
 
-    fn db_create(&self, arg: &str) -> Result<usize, Box<dyn Error>> {
+    pub fn db_create(&self, arg: &str) -> Result<usize, Box<dyn Error>> {
         let conn = connect()?;
 
         let res = conn.execute("INSERT INTO vaults('name') values(?)", params![arg]);
@@ -46,7 +44,7 @@ impl RecordDatabaseTrait for Vault {
         }
     }
 
-    fn db_update(&self, args: &[&str]) -> Result<usize, Box<dyn Error>> {
+    pub fn db_update(&self, args: &[&str]) -> Result<usize, Box<dyn Error>> {
         if args.len() != 2 {
             let ee = IoError::new(
                 std::io::ErrorKind::Other,
@@ -78,7 +76,7 @@ impl RecordDatabaseTrait for Vault {
         }
     }
 
-    fn db_delete(&self, args: &[&str]) -> Result<usize, Box<dyn Error>> {
+    pub fn db_delete(&self, args: &[&str]) -> Result<usize, Box<dyn Error>> {
         let conn = connect()?;
 
         let placeholders = args.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
