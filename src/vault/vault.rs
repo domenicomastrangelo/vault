@@ -67,6 +67,13 @@ impl RecordTrait for vault::Vault {
     }
 
     fn delete(&self, args: &[&str]) {
-        println!("Vault delete {:?}", args);
+        print!("Deleting vaults: ");
+        args.iter().for_each(|arg| {print!("{} ", arg)});
+        println!();
+
+        match self.db_delete(args) {
+            Ok(_) => println!("Vaults deleted"),
+            Err(e) => println!("Error deleting vaults: {}", e),
+        }
     }
 }

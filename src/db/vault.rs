@@ -1,4 +1,4 @@
-use rusqlite::params;
+use rusqlite::{params};
 
 use crate::common::record_trait::RecordDatabaseTrait;
 
@@ -71,9 +71,22 @@ impl RecordDatabaseTrait for Vault {
         }
     }
 
-    fn db_delete(&self, arg: &str) -> Result<usize, Box<dyn Error>> {
-        println!("Vault delete {:?}", arg);
+    fn db_delete(&self, args: &[&str]) -> Result<usize, Box<dyn Error>> {
+        let conn = connect()?;
 
-        Ok(0)
+        let placeholders = args.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
+        let query = format!("DELETE FROM vaults WHERE name in ({})", placeholders);
+        let mut stmt = conn.prepare(&query)?;
+
+        let params: Vec<&dyn rusqlite::ToSql> = args.iter().map(|arg| arg as &dyn rusqlite::ToSql).collect();
+        
+        let res = stmt.execute(params.as_slice())?;
+
+        if res == 0 {
+            let ee = IoError::new(std::io::ErrorKind::Other, "No vaults deleted");
+            return Err(Box::new(ee))
+        } else {
+            Ok(res)
+        }
     }
 }
