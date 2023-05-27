@@ -1,9 +1,5 @@
-use crate::common::record_trait::RecordTrait;
-
-pub struct Vault {
-    pub name: String,
-    pub id: u64,
-}
+use crate::common::record_trait::{RecordTrait, RecordDatabaseTrait};
+use crate::db::vault;
 
 pub fn vault(args: &[&str]) {
     if args.len() < 2 {
@@ -11,7 +7,7 @@ pub fn vault(args: &[&str]) {
         return;
     }
 
-    let vault = Vault {
+    let vault = vault::Vault {
         name: args[1].to_string(),
         id: 0,
     };
@@ -26,25 +22,31 @@ pub fn vault(args: &[&str]) {
     }
 }
 
-impl RecordTrait for Vault {
+impl RecordTrait for vault::Vault {
     fn list(&self, args: &[&str]) {
-        print!("Vault list {:?}", args)
+        println!("Vault list {:?}", args);
     }
 
     fn create(&self, args: &[&str]) {
-        print!("Vault create {:?}", args)
+        println!("Creating vault {:?}", args[0]);
+        let res = self.db_create(args[0]);
+
+        match res {
+            Ok(_) => println!("Vault created"),
+            Err(e) => println!("Error creating vault: {}", e),
+        }
     }
 
     fn read(&self, args: &[&str]) {
-        print!("Vault read {:?}", args)
+        println!("Vault read {:?}", args);
     }
 
     fn update(&self, args: &[&str]) {
-        print!("Vault update {:?}", args)
+        println!("Vault update {:?}", args);
     }
 
     fn delete(&self, args: &[&str]) {
-        print!("Vault delete {:?}", args)
+        println!("Vault delete {:?}", args);
     }
 }
 
