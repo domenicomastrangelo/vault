@@ -44,6 +44,19 @@ pub fn certificate(args: &[&str]) {
 }
 
 impl certificate::Certificate {
+    fn list(&self) {
+        println!("Listing certificates");
+
+        let values = self.db_list();
+
+        match values {
+            Ok(value) => {
+                value.iter().for_each(|v| println!("{}", v));
+            },
+            Err(e) => println!("{}", e),
+        }
+    }
+
     fn create<'a>(&'a mut self) {
         println!("Creating certificate: {}", self.name);
 
@@ -62,10 +75,6 @@ impl certificate::Certificate {
             Ok(_) => println!("Certificate created"),
             Err(e) => println!("Error creating certificate: {}", e),
         }
-    }
-
-    fn list(&self) {
-        println!("Listing certificates");
     }
 
     fn update(&self, args: &[&str]) {

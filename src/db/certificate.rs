@@ -6,6 +6,8 @@ use rusqlite::params;
 
 use std::io::Error as IoError;
 
+use super::certificate;
+
 pub struct Certificate {
     pub vault_name: String,
     pub name: String,
@@ -14,6 +16,22 @@ pub struct Certificate {
 }
 
 impl Certificate {
+    pub fn db_list(&self) -> Result<Vec<String>, Box<dyn Error>> {
+        let conn = connect()?;
+
+        let mut values: Vec<String> = Vec::new();
+
+        let mut stmt = conn.prepare("SELECT name FROM certificates")?;
+
+        let rows = stmt.query_map(params![], |row| Ok(row.get(0)?))?;
+
+        for row in rows {
+            values.push(row?);
+        }
+
+        Ok(values)
+    }
+
     pub fn db_create(&self) -> Result<usize, Box<dyn Error>> {
         let conn = connect()?;
 
@@ -37,13 +55,6 @@ impl Certificate {
                 }
             }
         }
-    }
-
-    pub fn db_list(&self) -> Result<Vec<String>, Box<dyn Error>> {
-        let mut values: Vec<String> = Vec::new();
-        values.push("test".to_string());
-
-        Ok(values)
     }
 
     pub fn db_update(&self) -> Result<u64, Box<dyn Error>> {
