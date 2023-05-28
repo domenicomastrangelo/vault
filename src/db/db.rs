@@ -38,7 +38,8 @@ pub fn connect() -> Result<PooledConnection<SqliteConnectionManager>, Box<dyn Er
             id INTEGER PRIMARY KEY,
             vault_id INTEGER NOT NULL,
             name VARCHAR(255) NOT NULL,
-            value TEXT NOT NULL,
+            data TEXT NOT NULL,
+            cert_type VARCHAR(255) NOT NULL,
             FOREIGN KEY (vault_id) REFERENCES vault(id) ON DELETE CASCADE,
             UNIQUE(vault_id, name)
         )",

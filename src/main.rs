@@ -11,6 +11,8 @@ mod db;
 use db::db as database;
 
 fn main() {
+    env_logger::init();
+
     let conn = database::connect();
 
     if conn.is_err() {
