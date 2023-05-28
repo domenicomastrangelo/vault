@@ -1,5 +1,7 @@
 use crate::db::certificate::{self, Certificate};
 
+use crate::common::utils::check_args;
+
 pub fn certificate(args: &[&str]) {
     if args.len() < 2 {
         println!(
@@ -27,6 +29,8 @@ pub fn certificate(args: &[&str]) {
 
 impl certificate::Certificate {
     fn list(& mut self, args: &[&str]) {
+        check_args(1, args);
+
         self.vault_name = args[0].to_string();
 
         println!("Listing certificates");
@@ -42,6 +46,8 @@ impl certificate::Certificate {
     }
 
     fn create<'a>(&'a mut self, args: &[&str]) {
+        check_args(3, args);
+
         self.vault_name = args[0].to_string();
         self.cert_type = args[1].to_string();
         self.name = args[2].to_string();
@@ -66,6 +72,8 @@ impl certificate::Certificate {
     }
 
     fn update(& mut self, args: &[&str]) {
+        check_args(1, args);
+
         self.vault_name = args[0].to_string();
 
         println!("Updating certificate: {:?}", self.name);
@@ -79,6 +87,8 @@ impl certificate::Certificate {
     }
 
     fn delete(& mut self, args: &[&str]) {
+        check_args(1, args);
+
         self.vault_name = args[0].to_string();
         self.name = args[1].to_string();
 
@@ -93,7 +103,8 @@ impl certificate::Certificate {
     }
 
     fn get(& mut self, args: &[&str]) {
-        println!("{:#?}", args);
+        check_args(2, args);
+
         self.vault_name = args[0].to_string();
         self.name = args[1].to_string();
 

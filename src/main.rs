@@ -10,6 +10,8 @@ use secret::secret::secret;
 mod db;
 use db::db as database;
 
+mod common;
+
 fn main() {
     env_logger::init();
 
