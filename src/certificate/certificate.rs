@@ -1,63 +1,51 @@
 use crate::db::certificate::{self, Certificate};
 
 pub fn certificate(args: &[&str]) {
-    println!("{:#?}", args);
     if args.len() < 2 {
         println!(
-            "Usage: certificate [create,delete,list,read,update] <vault_name> <rsa, ecdsa> <certificate name>"
+            "Usage: certificate [create,delete,list,get,update] <vault_name> <rsa, ecdsa> <certificate name>"
         );
         return;
-    } else if args.len() < 4 {
-        if args[0] == "list" {
-            let certificate = Certificate {
-                vault_name: args[1].to_string(),
-                name: "".to_string(),
-                cert_type: "".to_string(),
-                data: "".to_owned(),
-            };
-
-            certificate.list();
-
-            return;
-        } else {
-            println!(
-                "Usage: certificate [create,delete,list,read,update] <vault_name> <rsa, ecdsa> <certificate name>"
-        );
-            return;
-        }
     }
 
     let mut certificate = Certificate {
-        vault_name: args[1].to_string(),
-        name: args[2].to_string(),
-        cert_type: args[3].to_string(),
-        data: "".to_owned(),
+        vault_name: "".to_string(),
+        name: "".to_string(),
+        cert_type: "".to_string(),
+        data: "".to_string(),
     };
 
     match args[0] {
-        "create" => certificate.create(),
-        "delete" => println!("Certificate delete: {:?}", args),
-        "list" => println!("Certificate list: {:?}", args),
-        "update" => println!("Certificate update: {:?}", args),
+        "create" => certificate.create(&args[1..]),
+        "delete" => certificate.delete(&args[1..]),
+        "list" => certificate.list(&args[1..]),
+        "update" => certificate.update(&args[1..]),
+        "get" => certificate.get(&args[1..]),
         _ => println!("Unknown command: {}", args[0]),
     }
 }
 
 impl certificate::Certificate {
-    fn list(&self) {
-        println!("Listing certificates");
+    fn list(& mut self, args: &[&str]) {
+        self.vault_name = args[0].to_string();
 
+        println!("Listing certificates");
+        
         let values = self.db_list();
 
         match values {
             Ok(value) => {
                 value.iter().for_each(|v| println!("{}", v));
-            },
+            }
             Err(e) => println!("{}", e),
         }
     }
 
-    fn create<'a>(&'a mut self) {
+    fn create<'a>(&'a mut self, args: &[&str]) {
+        self.vault_name = args[0].to_string();
+        self.cert_type = args[1].to_string();
+        self.name = args[2].to_string();
+
         println!("Creating certificate: {}", self.name);
 
         println!("Insert the certificate data here:");
@@ -77,11 +65,45 @@ impl certificate::Certificate {
         }
     }
 
-    fn update(&self, args: &[&str]) {
-        println!("Certificate update: {:?}", args);
+    fn update(& mut self, args: &[&str]) {
+        self.vault_name = args[0].to_string();
+
+        println!("Updating certificate: {:?}", self.name);
+
+        let res = self.db_update();
+
+        match res {
+            Ok(_) => println!("Certificate updated"),
+            Err(e) => println!("Error updating certificate: {}", e),
+        }
     }
 
-    fn delete(&self, args: &[&str]) {
-        println!("Certificate delete: {:?}", args);
+    fn delete(& mut self, args: &[&str]) {
+        self.vault_name = args[0].to_string();
+        self.name = args[1].to_string();
+
+        println!("Deleting certificate: {:?}", self.name);
+
+        let res = self.db_delete();
+
+        match res {
+            Ok(_) => println!("Certificate deleted"),
+            Err(e) => println!("Error deleting certificate: {}", e),
+        }
+    }
+
+    fn get(& mut self, args: &[&str]) {
+        println!("{:#?}", args);
+        self.vault_name = args[0].to_string();
+        self.name = args[1].to_string();
+
+        println!("Getting certificate: {:?}", self.name);
+
+        let res = self.db_get();
+
+        match res {
+            Ok(value) => println!("{}", value),
+            Err(e) => println!("Error getting certificate: {}", e),
+        }
     }
 }

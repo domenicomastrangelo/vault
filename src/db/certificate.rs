@@ -6,8 +6,6 @@ use rusqlite::params;
 
 use std::io::Error as IoError;
 
-use super::certificate;
-
 pub struct Certificate {
     pub vault_name: String,
     pub name: String,
@@ -57,11 +55,55 @@ impl Certificate {
         }
     }
 
-    pub fn db_update(&self) -> Result<u64, Box<dyn Error>> {
-        Ok(0)
+    pub fn db_update(&self) -> Result<usize, Box<dyn Error>> {
+        let conn = connect()?;
+
+        let res = conn.execute(
+            "UPDATE certificates SET data = ? WHERE name = ?",
+            params![self.data, self.name],
+        );
+
+        match res {
+            Ok(size) => Ok(size),
+            Err(_) => {
+                let ee = IoError::new(
+                    std::io::ErrorKind::Other,
+                    "There's been an error updating the certificate",
+                );
+                return Err(Box::new(ee));
+            }
+        }
     }
 
-    pub fn db_delete(&self) -> Result<u64, Box<dyn Error>> {
-        Ok(0)
+    pub fn db_delete(&self) -> Result<usize, Box<dyn Error>> {
+        let conn = connect()?;
+
+        let res = conn.execute(
+            "DELETE FROM certificates WHERE name = ?",
+            params![self.name],
+        );
+
+        match res {
+            Ok(size) => Ok(size),
+            Err(_) => {
+                let ee = IoError::new(
+                    std::io::ErrorKind::Other,
+                    "There's been an error deleting the certificate",
+                );
+                return Err(Box::new(ee));
+            }
+        }
+    }
+
+    pub fn db_get(&self) -> Result<String, Box<dyn Error>> {
+        let conn = connect()?;
+
+        let data = conn.query_row(
+            "SELECT data FROM certificates WHERE name = ?",
+            params![self.name],
+            |row| Ok(row.get(0)?),
+        )?;
+
+        Ok(data)
     }
 }
