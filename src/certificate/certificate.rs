@@ -28,13 +28,13 @@ pub fn certificate(args: &[&str]) {
 }
 
 impl certificate::Certificate {
-    fn list(& mut self, args: &[&str]) {
+    fn list(&mut self, args: &[&str]) {
         check_args(1, args);
 
         self.vault_name = args[0].to_string();
 
         println!("Listing certificates");
-        
+
         let values = self.db_list();
 
         match values {
@@ -71,7 +71,7 @@ impl certificate::Certificate {
         }
     }
 
-    fn update(& mut self, args: &[&str]) {
+    fn update(&mut self, args: &[&str]) {
         check_args(1, args);
 
         self.vault_name = args[0].to_string();
@@ -86,7 +86,7 @@ impl certificate::Certificate {
         }
     }
 
-    fn delete(& mut self, args: &[&str]) {
+    fn delete(&mut self, args: &[&str]) {
         check_args(1, args);
 
         self.vault_name = args[0].to_string();
@@ -102,7 +102,7 @@ impl certificate::Certificate {
         }
     }
 
-    fn get(& mut self, args: &[&str]) {
+    fn get(&mut self, args: &[&str]) {
         check_args(2, args);
 
         self.vault_name = args[0].to_string();

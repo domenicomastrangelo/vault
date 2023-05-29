@@ -11,6 +11,7 @@ mod db;
 use db::db as database;
 
 mod common;
+mod test_utils;
 
 fn main() {
     env_logger::init();
@@ -29,10 +30,10 @@ fn main() {
         return;
     }
 
-    let args_str = args.iter().map(|s| s.as_str()).collect::<Vec<&str>>();
+    let mut args_str = args.iter().map(|s| s.as_str()).collect::<Vec<&str>>();
 
     match args[1].as_str() {
-        "vault" => vault(&args_str[2..]),
+        "vault" => vault(&mut args_str[2..]),
         "secret" => secret(&args_str[2..]),
         "certificate" => certificate(&args_str[2..]),
         _ => println!("Unknown command: {}", args[1]),

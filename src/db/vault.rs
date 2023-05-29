@@ -26,10 +26,10 @@ impl Vault {
         Ok(values)
     }
 
-    pub fn db_create(&self, arg: &str) -> Result<usize, Box<dyn Error>> {
+    pub fn db_create(&self) -> Result<usize, Box<dyn Error>> {
         let conn = connect()?;
 
-        let res = conn.execute("INSERT INTO vaults('name') values(?)", params![arg]);
+        let res = conn.execute("INSERT INTO vaults('name') values(?)", params![self.name]);
 
         match res {
             Ok(size) => Ok(size),
@@ -76,17 +76,10 @@ impl Vault {
         }
     }
 
-    pub fn db_delete(&self, args: &[&str]) -> Result<usize, Box<dyn Error>> {
+    pub fn db_delete(&self) -> Result<usize, Box<dyn Error>> {
         let conn = connect()?;
 
-        let placeholders = args.iter().map(|_| "?").collect::<Vec<_>>().join(", ");
-        let query = format!("DELETE FROM vaults WHERE name in ({})", placeholders);
-        let mut stmt = conn.prepare(&query)?;
-
-        let params: Vec<&dyn rusqlite::ToSql> =
-            args.iter().map(|arg| arg as &dyn rusqlite::ToSql).collect();
-
-        let res = stmt.execute(params.as_slice())?;
+        let res = conn.execute("DELETE FROM vaults WHERE name = ?", params![self.name])?;
 
         if res == 0 {
             let ee = IoError::new(std::io::ErrorKind::Other, "No vaults deleted");

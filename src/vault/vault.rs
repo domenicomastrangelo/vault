@@ -1,6 +1,6 @@
 use crate::db::vault;
 
-pub fn vault(args: &[&str]) {
+pub fn vault(args: &mut [&str]) {
     if args.len() < 2 {
         if args[0] == "list" {
             let vault = vault::Vault {
@@ -17,13 +17,13 @@ pub fn vault(args: &[&str]) {
         }
     }
 
-    let vault = vault::Vault {
+    let mut vault = vault::Vault {
         name: args[1].to_string(),
         id: 0,
     };
 
     match args[0] {
-        "create" => vault.create(&args[1..]),
+        "create" => vault.create(&mut args[1..]),
         "delete" => vault.delete(&args[1..]),
         "update" => vault.update(&args[1..]),
         _ => println!("Unknown command: {}", args[0]),
@@ -45,9 +45,12 @@ impl vault::Vault {
         }
     }
 
-    fn create(&self, args: &[&str]) {
+    fn create(&mut self, args: &[&str]) {
         println!("Creating vault {}", args[0]);
-        let res = self.db_create(args[0]);
+
+        self.name = args[0].to_string();
+
+        let res = self.db_create();
 
         match res {
             Ok(_) => println!("Vault created"),
@@ -65,12 +68,12 @@ impl vault::Vault {
         }
     }
 
-    fn delete(&self, args: &[&str]) {
-        print!("Deleting vaults: ");
-        args.iter().for_each(|arg| print!("{} ", arg));
-        println!();
+    fn delete(&mut self, args: &[&str]) {
+        self.name = args[0].to_string();
 
-        println!("This will delete all secrets and certiticates in the vaults");
+        println!("Deleting vault: {}", self.name);
+
+        println!("This will delete all secrets and certiticates in the vault");
 
         println!("Are you sure? (y/N)");
 
@@ -85,7 +88,7 @@ impl vault::Vault {
             return;
         }
 
-        match self.db_delete(args) {
+        match self.db_delete() {
             Ok(_) => println!("Vaults deleted"),
             Err(e) => println!("Error deleting vaults: {}", e),
         }
