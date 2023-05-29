@@ -99,7 +99,8 @@ mod tests {
 
     #[test]
     fn test_db_list() {
-        let res = setup_vault("test_vault".to_string());
+        let vault_name = "test_vault_db_list";
+        let res = setup_vault(vault_name.to_string());
 
         match res {
             Ok(r) => assert_eq!(r, 1),
@@ -109,20 +110,24 @@ mod tests {
         }
 
         let v = Vault {
-            name: "test_vault".to_string(),
+            name: vault_name.to_string(),
             id: 0,
         };
 
         let res = v.db_list();
 
         match res {
-            Ok(r) => assert_eq!(r[0], "test_vault"),
+            Ok(r) => {
+                let found_string = r.iter().find(|&x| x == &vault_name.to_string());
+
+                assert!(found_string.is_some());
+            }
             Err(e) => {
                 println!("{}", e);
             }
         }
 
-        let res = destroy_vault("test_vault".to_string());
+        let res = destroy_vault(vault_name.to_string());
 
         match res {
             Ok(r) => assert_eq!(r, 1),
@@ -134,8 +139,9 @@ mod tests {
 
     #[test]
     fn test_db_create() {
+        let vault_name = "test_vault_db_create";
         let v = Vault {
-            name: "test_vault".to_string(),
+            name: vault_name.to_string(),
             id: 0,
         };
 
@@ -148,7 +154,7 @@ mod tests {
             }
         }
 
-        let res = destroy_vault("test_vault".to_string());
+        let res = destroy_vault(vault_name.to_string());
 
         match res {
             Ok(r) => assert_eq!(r, 1),
@@ -160,7 +166,9 @@ mod tests {
 
     #[test]
     fn test_db_update() {
-        let res = setup_vault("test_vault".to_string());
+        let vault_name = "test_vault_db_update";
+        let vault_name_new = "test_vault_db_update_new";
+        let res = setup_vault(vault_name.to_string());
 
         match res {
             Ok(r) => assert_eq!(r, 1),
@@ -170,20 +178,34 @@ mod tests {
         }
 
         let v = Vault {
-            name: "test_vault".to_string(),
+            name: vault_name.to_string(),
             id: 0,
         };
 
-        let res = v.db_update(&["vault", "test_vault", "test_vault2"]);
+        let res = v.db_update(&[vault_name, vault_name_new]);
 
         match res {
-            Ok(r) => assert_eq!(r, 1),
+            // r in this case is the row ID, not the number of rows affected
+            Ok(r) => assert!(r > 0),
             Err(e) => {
                 println!("{}", e);
             }
         }
 
-        let res = destroy_vault("test_vault2".to_string());
+        let res = v.db_list();
+
+        match res {
+            Ok(r) => {
+                let found_string = r.iter().find(|&x| x == &vault_name_new.to_string());
+
+                assert!(found_string.is_some());
+            }
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let res = destroy_vault(vault_name_new.to_string());
 
         match res {
             Ok(r) => assert_eq!(r, 1),
@@ -195,7 +217,8 @@ mod tests {
 
     #[test]
     fn test_db_delete() {
-        let res = setup_vault("test_vault".to_string());
+        let vault_name = "test_vault_db_delete";
+        let res = setup_vault(vault_name.to_string());
 
         match res {
             Ok(r) => assert_eq!(r, 1),
@@ -205,7 +228,7 @@ mod tests {
         }
 
         let v = Vault {
-            name: "test_vault".to_string(),
+            name: vault_name.to_string(),
             id: 0,
         };
 
