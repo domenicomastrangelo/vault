@@ -38,7 +38,7 @@ impl vault::Vault {
         match res {
             Ok(vaults) => {
                 for vault in vaults {
-                    println!("Vault: {}", vault.1);
+                    println!("Vault: {}", vault);
                 }
             }
             Err(e) => println!("Error listing vaults: {}", e),
