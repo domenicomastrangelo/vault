@@ -15,7 +15,7 @@ impl Vault {
         let conn = connect()?;
         let mut values = Vec::new();
 
-        let mut stmt = conn.prepare("SELECT id, name FROM vaults")?;
+        let mut stmt = conn.prepare("SELECT name FROM vaults")?;
 
         let rows = stmt.query_map(params![], |row| Ok(row.get(0)?))?;
 
@@ -184,6 +184,32 @@ mod tests {
         }
 
         let res = destroy_vault("test_vault2".to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+    }
+
+    #[test]
+    fn test_db_delete() {
+        let res = setup_vault("test_vault".to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let v = Vault {
+            name: "test_vault".to_string(),
+            id: 0,
+        };
+
+        let res = v.db_delete();
 
         match res {
             Ok(r) => assert_eq!(r, 1),
