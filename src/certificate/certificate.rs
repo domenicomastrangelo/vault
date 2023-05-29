@@ -1,4 +1,4 @@
-use crate::db::certificate::{self, Certificate};
+use crate::db::certificate::Certificate;
 
 use crate::common::utils::check_args;
 
@@ -27,7 +27,7 @@ pub fn certificate(args: &[&str]) {
     }
 }
 
-impl certificate::Certificate {
+impl Certificate {
     fn list(&mut self, args: &[&str]) {
         check_args(1, args);
 

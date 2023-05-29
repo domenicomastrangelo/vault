@@ -6,8 +6,6 @@ use rusqlite::params;
 
 use std::io::Error as IoError;
 
-use crate::test_utils::test_utils;
-
 pub struct Certificate {
     pub vault_name: String,
     pub name: String,
@@ -111,39 +109,189 @@ impl Certificate {
 }
 
 #[cfg(test)]
-#[test]
-fn test_db_create() {
-    let setup = test_utils::setup_vault("test".to_string());
+mod tests {
+    use crate::db::certificate::Certificate;
+    use crate::test_utils::test_utils::{destroy_vault, setup_vault};
 
-    match setup {
-        Ok(r) => assert_eq!(r, 1),
-        Err(e) => {
-            println!("{}", e);
+    #[test]
+    fn test_db_create() {
+        let setup = setup_vault("test".to_string());
+
+        match setup {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let cert = Certificate {
+            vault_name: "test".to_string(),
+            name: "test".to_string(),
+            cert_type: "test".to_string(),
+            data: "test".to_string(),
+        };
+
+        let res = cert.db_create();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let res = destroy_vault("test".to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
         }
     }
 
-    let cert = Certificate {
-        vault_name: "test".to_string(),
-        name: "test".to_string(),
-        cert_type: "test".to_string(),
-        data: "test".to_string(),
-    };
+    #[test]
+    fn test_db_update() {
+        let setup = setup_vault("test".to_string());
 
-    let res = cert.db_create();
+        match setup {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
 
-    match res {
-        Ok(r) => assert_eq!(r, 1),
-        Err(e) => {
-            println!("{}", e);
+        let cert = Certificate {
+            vault_name: "test".to_string(),
+            name: "test".to_string(),
+            cert_type: "test".to_string(),
+            data: "test".to_string(),
+        };
+
+        let res = cert.db_create();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let cert = Certificate {
+            vault_name: "test".to_string(),
+            name: "test".to_string(),
+            cert_type: "test".to_string(),
+            data: "test2".to_string(),
+        };
+
+        let res = cert.db_update();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let res = destroy_vault("test".to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
         }
     }
 
-    let res = test_utils::destroy_vault("test".to_string());
+    #[test]
+    fn test_db_delete() {
+        let setup = setup_vault("test".to_string());
 
-    match res {
-        Ok(r) => assert_eq!(r, 1),
-        Err(e) => {
-            println!("{}", e);
+        match setup {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let cert = Certificate {
+            vault_name: "test".to_string(),
+            name: "test".to_string(),
+            cert_type: "test".to_string(),
+            data: "test".to_string(),
+        };
+
+        let res = cert.db_create();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let res = cert.db_delete();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let res = destroy_vault("test".to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+    }
+
+    #[test]
+    fn test_db_list() {
+        let setup = setup_vault("test".to_string());
+
+        match setup {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let cert = Certificate {
+            vault_name: "test".to_string(),
+            name: "test".to_string(),
+            cert_type: "test".to_string(),
+            data: "test".to_string(),
+        };
+
+        let res = cert.db_create();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let res = cert.db_list();
+
+        match res {
+            Ok(r) => assert_eq!(r[0], "test"),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let res = destroy_vault("test".to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
         }
     }
 }
