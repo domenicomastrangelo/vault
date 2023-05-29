@@ -157,4 +157,39 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn test_db_update() {
+        let res = setup_vault("test_vault".to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let v = Vault {
+            name: "test_vault".to_string(),
+            id: 0,
+        };
+
+        let res = v.db_update(&["vault", "test_vault", "test_vault2"]);
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let res = destroy_vault("test_vault2".to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+    }
 }
