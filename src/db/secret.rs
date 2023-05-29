@@ -13,15 +13,15 @@ pub struct Secret {
 }
 
 impl Secret {
-    pub fn db_list(&self) -> Result<Vec<(u64, String)>, Box<dyn Error>> {
+    pub fn db_list(&self) -> Result<Vec<String>, Box<dyn Error>> {
         let conn = connect()?;
         let mut values = Vec::new();
 
         let mut stmt = conn.prepare(
-            "SELECT id, name FROM secrets WHERE vault_id = (SELECT id from vaults where name = ? LIMIT 1)",
+            "SELECT name FROM secrets WHERE vault_id = (SELECT id from vaults where name = ? LIMIT 1)",
         )?;
 
-        let rows = stmt.query_map(params![self.vault], |row| Ok((row.get(0)?, row.get(1)?)))?;
+        let rows = stmt.query_map(params![self.vault], |row| Ok(row.get(0)?))?;
 
         for row in rows {
             values.push(row?);
@@ -31,19 +31,11 @@ impl Secret {
     }
 
     pub fn db_create(&self) -> Result<usize, Box<dyn Error>> {
-        let mut value = String::new();
-
-        println!("Enter secret value: ");
-
-        std::io::stdin()
-            .read_line(&mut value)
-            .expect("Failed to read line");
-
         let conn = connect()?;
 
         let res = conn.execute(
             "INSERT INTO secrets('name', 'value', 'vault_id') values(?, ?, (SELECT id FROM vaults WHERE name = ? LIMIT 1))",
-            params![self.name, value, self.vault],
+            params![self.name, self.value, self.vault],
         );
 
         match res {
@@ -97,5 +89,54 @@ impl Secret {
         }
 
         Ok(values)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::test_utils::test_utils::{destroy_vault, setup_vault};
+
+    use super::Secret;
+
+    #[test]
+    fn test_db_list() {
+        let vault_name = "test_secret_db_list";
+        let secret_name = "test_secret_db_list";
+        let res = setup_vault(vault_name.to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to setup vault: {}", e),
+        }
+
+        let secret = Secret {
+            name: secret_name.to_string(),
+            value: "test".to_string(),
+            vault: vault_name.to_string(),
+        };
+
+        let res = secret.db_create();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to create secret: {}", e),
+        }
+
+        let res = secret.db_list();
+
+        match res {
+            Ok(r) => {
+                let found_string = r.iter().find(|&x| x == &secret_name.to_string());
+                assert!(found_string.is_some());
+            }
+            Err(e) => panic!("Failed to list secrets: {}", e),
+        }
+        println!("here");
+        let res = destroy_vault(vault_name.to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to destroy vault: {}", e),
+        }
     }
 }

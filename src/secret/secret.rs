@@ -26,8 +26,18 @@ pub fn secret(args: &[&str]) {
 }
 
 impl secret::Secret {
-    fn create(&self, args: &[&str]) {
+    fn create(&mut self, args: &[&str]) {
         println!("Creating secret: {:?}", args[1]);
+
+        let mut value = String::new();
+
+        println!("Enter secret value: ");
+
+        std::io::stdin()
+            .read_line(&mut value)
+            .expect("Failed to read line");
+
+        self.value = value.trim().to_string();
 
         let res = self.db_create();
 
@@ -56,7 +66,7 @@ impl secret::Secret {
         match res {
             Ok(secrets) => {
                 for secret in secrets {
-                    println!("Secret: {}", secret.1);
+                    println!("Secret: {}", secret);
                 }
             }
             Err(e) => println!("Error listing secrets: {}", e),

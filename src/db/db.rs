@@ -12,6 +12,8 @@ pub fn connect() -> Result<PooledConnection<SqliteConnectionManager>, Box<dyn Er
 
     let conn = pool.get()?;
 
+    conn.execute("PRAGMA foreign_keys=1", params![])?;
+
     conn.execute(
         "CREATE TABLE IF NOT EXISTS vaults (
             id INTEGER PRIMARY KEY,
@@ -27,7 +29,7 @@ pub fn connect() -> Result<PooledConnection<SqliteConnectionManager>, Box<dyn Er
             vault_id INTEGER NOT NULL,
             name VARCHAR(255) NOT NULL,
             value TEXT NOT NULL,
-            FOREIGN KEY (vault_id) REFERENCES vault(id) ON DELETE CASCADE,
+            FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE,
             UNIQUE(vault_id, name)
         )",
         params![],
@@ -40,7 +42,7 @@ pub fn connect() -> Result<PooledConnection<SqliteConnectionManager>, Box<dyn Er
             name VARCHAR(255) NOT NULL,
             data TEXT NOT NULL,
             cert_type VARCHAR(255) NOT NULL,
-            FOREIGN KEY (vault_id) REFERENCES vault(id) ON DELETE CASCADE,
+            FOREIGN KEY (vault_id) REFERENCES vaults(id) ON DELETE CASCADE,
             UNIQUE(vault_id, name)
         )",
         params![],
