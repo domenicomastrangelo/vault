@@ -131,4 +131,30 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn test_db_create() {
+        let v = Vault {
+            name: "test_vault".to_string(),
+            id: 0,
+        };
+
+        let res = v.db_create();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+
+        let res = destroy_vault("test_vault".to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => {
+                println!("{}", e);
+            }
+        }
+    }
 }
