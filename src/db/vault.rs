@@ -109,18 +109,13 @@ mod tests {
 
         let res = v.db_list();
 
-        match res {
-            Ok(r) => {
-                let found_string = r.iter().find(|&x| x == &vault_name.to_string());
+        let list = res.unwrap_or_else(|e| panic!("Failed to list vaults: {}", e));
 
-                assert!(found_string.is_some());
-            }
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        let found_string = list.iter().find(|&x| x == &vault_name.to_string());
 
         destroy_vault(vault_name.to_string());
+
+        assert!(found_string.is_some());
     }
 
     #[test]
@@ -133,14 +128,11 @@ mod tests {
 
         let res = v.db_create();
 
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        let vault_created = res.unwrap_or_else(|e| panic!("Failed to create vault: {}", e));
 
         destroy_vault(vault_name.to_string());
+
+        assert_eq!(vault_created, 1);
     }
 
     #[test]
@@ -156,28 +148,17 @@ mod tests {
 
         let res = v.db_update(&[vault_name, vault_name_new]);
 
-        match res {
-            // r in this case is the row ID, not the number of rows affected
-            Ok(r) => assert!(r > 0),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        res.unwrap_or_else(|e| panic!("Failed to update vault: {}", e));
 
         let res = v.db_list();
 
-        match res {
-            Ok(r) => {
-                let found_string = r.iter().find(|&x| x == &vault_name_new.to_string());
+        let list = res.unwrap_or_else(|e| panic!("Failed to list vaults: {}", e));
 
-                assert!(found_string.is_some());
-            }
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        let found_string = list.iter().find(|&x| x == &vault_name_new.to_string());
 
         destroy_vault(vault_name_new.to_string());
+
+        assert!(found_string.is_some());
     }
 
     #[test]
