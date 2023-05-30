@@ -329,17 +329,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "436b050e76ed2903236f032a59761c1eb99e1b0aead2c257922771dab1fc8c78"
 
 [[package]]
-name = "rs-vault"
-version = "0.0.1"
-dependencies = [
- "env_logger",
- "log",
- "r2d2",
- "r2d2_sqlite",
- "rusqlite",
-]
-
-[[package]]
 name = "rusqlite"
 version = "0.29.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -405,6 +394,17 @@ checksum = "345444e32442451b267fc254ae85a209c64be56d2890e601a0c37ff0c3c5ecd2"
 dependencies = [
  "getrandom",
  "rand",
+]
+
+[[package]]
+name = "vault"
+version = "0.0.1"
+dependencies = [
+ "env_logger",
+ "log",
+ "r2d2",
+ "r2d2_sqlite",
+ "rusqlite",
 ]
 
 [[package]]
