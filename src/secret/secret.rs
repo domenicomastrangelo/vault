@@ -21,6 +21,7 @@ pub fn secret(args: &[&str]) {
         "delete" => secret.delete(&args[1..]),
         "list" => secret.list(),
         "get" => secret.get(),
+        "disable" => secret.disable(),
         _ => println!("Unknown command: {}", args[0]),
     }
 }
@@ -81,6 +82,17 @@ impl secret::Secret {
         match res {
             Ok(data) => println!("{}", data),
             Err(e) => println!("Error reading secret {}", e),
+        }
+    }
+
+    fn disable(&self) {
+        println!("Disabling secret {}", self.name);
+
+        let res = self.db_disable();
+
+        match res {
+            Ok(_) => println!("Secret disabled"),
+            Err(e) => println!("Error disabling secret {}", e),
         }
     }
 }

@@ -86,6 +86,27 @@ impl Secret {
 
         Ok(value?)
     }
+
+    pub fn db_disable(&self) -> Result<bool, Box<dyn Error>> {
+        let conn = connect()?;
+
+        let res = conn.execute(
+            "UPDATE secrets SET enabled = 0 WHERE name = ? AND vault_id = (SELECT id FROM vaults WHERE name = ? LIMIT 1)",
+            params![self.name, self.vault],
+        );
+
+        match res {
+            Ok(size) if size > 0 => Ok(true),
+            Ok(_) => Err(Box::new(IoError::new(
+                std::io::ErrorKind::Other,
+                "Secret was not disabled, double check the name",
+            ))),
+            Err(_) => Err(Box::new(IoError::new(
+                std::io::ErrorKind::Other,
+                "There's been an error disabling the secret",
+            ))),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -190,5 +211,31 @@ mod tests {
         destroy_vault(vault_name.to_string());
 
         assert_eq!(secret_from_db, "test".to_string())
+    }
+
+    #[test]
+    fn test_db_disable() {
+        let vault_name = "test_secret_db_disable";
+        let secret_name = "test_secret_db_disable";
+
+        setup_vault(vault_name.to_string());
+
+        let secret = Secret {
+            name: secret_name.to_string(),
+            value: "test".to_string(),
+            vault: vault_name.to_string(),
+        };
+
+        let res = secret.db_create();
+
+        res.unwrap_or_else(|e| panic!("Failed to create secret: {}", e));
+
+        let res = secret.db_disable();
+
+        let secret_disabled = res.unwrap_or_else(|e| panic!("Failed to disable secret: {}", e));
+
+        destroy_vault(vault_name.to_string());
+
+        assert_eq!(secret_disabled, true)
     }
 }
