@@ -21,7 +21,6 @@ pub fn certificate(args: &[&str]) {
         "create" => certificate.create(&args[1..]),
         "delete" => certificate.delete(&args[1..]),
         "list" => certificate.list(&args[1..]),
-        "update" => certificate.update(&args[1..]),
         "get" => certificate.get(&args[1..]),
         _ => println!("Unknown command: {}", args[0]),
     }
@@ -68,21 +67,6 @@ impl Certificate {
         match res {
             Ok(_) => println!("Certificate created"),
             Err(e) => println!("Error creating certificate: {}", e),
-        }
-    }
-
-    fn update(&mut self, args: &[&str]) {
-        check_args(1, args);
-
-        self.vault_name = args[0].to_string();
-
-        println!("Updating certificate: {:?}", self.name);
-
-        let res = self.db_update();
-
-        match res {
-            Ok(_) => println!("Certificate updated"),
-            Err(e) => println!("Error updating certificate: {}", e),
         }
     }
 

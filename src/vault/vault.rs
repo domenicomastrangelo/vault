@@ -25,7 +25,6 @@ pub fn vault(args: &mut [&str]) {
     match args[0] {
         "create" => vault.create(&mut args[1..]),
         "delete" => vault.delete(&args[1..]),
-        "update" => vault.update(&args[1..]),
         _ => println!("Unknown command: {}", args[0]),
     }
 }
@@ -55,16 +54,6 @@ impl vault::Vault {
         match res {
             Ok(_) => println!("Vault created"),
             Err(e) => println!("Error creating vault: {}", e),
-        }
-    }
-
-    fn update(&self, args: &[&str]) {
-        println!("Updating vault {}", args[0]);
-        let res = self.db_update(args);
-
-        match res {
-            Ok(_) => println!("Vault updated"),
-            Err(e) => println!("Error updating vault: {}", e),
         }
     }
 

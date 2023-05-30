@@ -55,26 +55,6 @@ impl Certificate {
         }
     }
 
-    pub fn db_update(&self) -> Result<usize, Box<dyn Error>> {
-        let conn = connect()?;
-
-        let res = conn.execute(
-            "UPDATE certificates SET data = ? WHERE name = ?",
-            params![self.data, self.name],
-        );
-
-        match res {
-            Ok(size) => Ok(size),
-            Err(_) => {
-                let ee = IoError::new(
-                    std::io::ErrorKind::Other,
-                    "There's been an error updating the certificate",
-                );
-                return Err(Box::new(ee));
-            }
-        }
-    }
-
     pub fn db_delete(&self) -> Result<usize, Box<dyn Error>> {
         let conn = connect()?;
 
@@ -134,48 +114,6 @@ mod tests {
         destroy_vault(vault_name.to_string());
 
         assert_eq!(certificate_created, 1);
-    }
-
-    #[test]
-    fn test_db_update() {
-        let vault_name = "test_certificate_db_update";
-        let certificate_name = "test_db_update";
-        setup_vault(vault_name.to_string());
-
-        let cert = Certificate {
-            vault_name: vault_name.to_string(),
-            name: certificate_name.to_string(),
-            cert_type: "rsa".to_string(),
-            data: "test".to_string(),
-        };
-
-        let res = cert.db_create();
-
-        res.unwrap_or_else(|e| panic!("Failed to create certificate: {}", e));
-
-        let cert = Certificate {
-            vault_name: vault_name.to_string(),
-            name: certificate_name.to_string(),
-            cert_type: "rsa".to_string(),
-            data: "test2".to_string(),
-        };
-
-        let res = cert.db_update();
-
-        let certificate_updated =
-            res.unwrap_or_else(|e| panic!("Failed to update certificate: {}", e));
-
-        assert_eq!(certificate_updated, 1);
-
-        let res = cert.db_list();
-
-        let list = res.unwrap_or_else(|e| panic!("Failed to list certificates: {}", e));
-
-        let found_string = list.iter().find(|&x| x == &certificate_name.to_string());
-
-        destroy_vault(vault_name.to_string());
-
-        assert!(found_string.is_some());
     }
 
     #[test]
