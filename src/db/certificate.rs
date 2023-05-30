@@ -11,6 +11,7 @@ pub struct Certificate {
     pub name: String,
     pub cert_type: String,
     pub data: String,
+    pub enabled: bool,
 }
 
 impl Certificate {
@@ -75,16 +76,70 @@ impl Certificate {
         }
     }
 
-    pub fn db_get(&self) -> Result<String, Box<dyn Error>> {
+    pub fn db_get(&self) -> Result<(bool, String), Box<dyn Error>> {
         let conn = connect()?;
 
         let data = conn.query_row(
-            "SELECT data FROM certificates WHERE name = ?",
+            "SELECT enabled, data FROM certificates WHERE name = ?",
             params![self.name],
-            |row| Ok(row.get(0)?),
+            |row| Ok((row.get(0)?, row.get(1)?)),
         )?;
 
         Ok(data)
+    }
+
+    pub fn db_disable(&self) -> Result<bool, Box<dyn Error>> {
+        let conn = connect()?;
+
+        let res = conn.execute(
+            "UPDATE certificates SET enabled = 0 WHERE name = ? and vault_id = (SELECT id FROM vaults WHERE name = ? LIMIT 1)",
+            params![self.name, self.vault_name],
+        );
+
+        match res {
+            Ok(size) if size > 0 => Ok(true),
+            Ok(_) => {
+                let ee = IoError::new(
+                    std::io::ErrorKind::Other,
+                    "There's been an error disabling the certificate",
+                );
+                return Err(Box::new(ee));
+            }
+            Err(_) => {
+                let ee = IoError::new(
+                    std::io::ErrorKind::Other,
+                    "There's been an error disabling the certificate",
+                );
+                return Err(Box::new(ee));
+            }
+        }
+    }
+
+    pub fn db_enable(&self) -> Result<bool, Box<dyn Error>> {
+        let conn = connect()?;
+
+        let res = conn.execute(
+            "UPDATE certificates SET enabled = 1 WHERE name = ? and vault_id = (SELECT id FROM vaults WHERE name = ? LIMIT 1)",
+            params![self.name, self.vault_name],
+        );
+
+        match res {
+            Ok(size) if size > 0 => Ok(true),
+            Ok(_) => {
+                let ee = IoError::new(
+                    std::io::ErrorKind::Other,
+                    "There's been an error enabling the certificate",
+                );
+                return Err(Box::new(ee));
+            }
+            Err(_) => {
+                let ee = IoError::new(
+                    std::io::ErrorKind::Other,
+                    "There's been an error enabling the certificate",
+                );
+                return Err(Box::new(ee));
+            }
+        }
     }
 }
 
@@ -104,6 +159,7 @@ mod tests {
             name: certificate_name.to_string(),
             cert_type: "rsa".to_string(),
             data: "test".to_string(),
+            enabled: true,
         };
 
         let res = cert.db_create();
@@ -127,6 +183,7 @@ mod tests {
             name: certificate_name.to_string(),
             cert_type: "rsa".to_string(),
             data: "test".to_string(),
+            enabled: true,
         };
 
         let res = cert.db_create();
@@ -154,6 +211,7 @@ mod tests {
             name: certificate_name.to_string(),
             cert_type: "rsa".to_string(),
             data: "test".to_string(),
+            enabled: true,
         };
 
         let res = cert.db_create();
@@ -169,5 +227,90 @@ mod tests {
         destroy_vault(vault_name.to_string());
 
         assert!(found_string.is_some());
+    }
+
+    #[test]
+    fn test_db_get() {
+        let vault_name = "test_certificate_db_get";
+        let certificate_name = "test_db_get";
+        setup_vault(vault_name.to_string());
+
+        let cert = Certificate {
+            vault_name: vault_name.to_string(),
+            name: certificate_name.to_string(),
+            cert_type: "rsa".to_string(),
+            data: "test".to_string(),
+            enabled: true,
+        };
+
+        let res = cert.db_create();
+
+        res.unwrap_or_else(|e| panic!("Failed to create certificate: {}", e));
+
+        let res = cert.db_get();
+
+        let data = res.unwrap_or_else(|e| panic!("Failed to get certificate: {}", e));
+
+        destroy_vault(vault_name.to_string());
+
+        assert_eq!(data.1, "test".to_string());
+    }
+
+    #[test]
+    fn test_db_disable() {
+        let vault_name = "test_certificate_db_disable";
+        let certificate_name = "test_db_disable";
+        setup_vault(vault_name.to_string());
+
+        let cert = Certificate {
+            vault_name: vault_name.to_string(),
+            name: certificate_name.to_string(),
+            cert_type: "rsa".to_string(),
+            data: "test".to_string(),
+            enabled: true,
+        };
+
+        let res = cert.db_create();
+
+        res.unwrap_or_else(|e| panic!("Failed to create certificate: {}", e));
+
+        let res = cert.db_disable();
+
+        let disabled = res.unwrap_or_else(|e| panic!("Failed to disable certificate: {}", e));
+
+        destroy_vault(vault_name.to_string());
+
+        assert!(disabled);
+    }
+
+    #[test]
+    fn test_db_enable() {
+        let vault_name = "test_certificate_db_enable";
+        let certificate_name = "test_db_enable";
+        setup_vault(vault_name.to_string());
+
+        let cert = Certificate {
+            vault_name: vault_name.to_string(),
+            name: certificate_name.to_string(),
+            cert_type: "rsa".to_string(),
+            data: "test".to_string(),
+            enabled: false,
+        };
+
+        let res = cert.db_create();
+
+        res.unwrap_or_else(|e| panic!("Failed to create certificate: {}", e));
+
+        let res = cert.db_disable();
+
+        res.unwrap_or_else(|e| panic!("Failed to disable certificate: {}", e));
+
+        let res = cert.db_enable();
+
+        let enabled = res.unwrap_or_else(|e| panic!("Failed to enable certificate: {}", e));
+
+        destroy_vault(vault_name.to_string());
+
+        assert!(enabled);
     }
 }

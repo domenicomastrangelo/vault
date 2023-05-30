@@ -15,6 +15,7 @@ pub fn certificate(args: &[&str]) {
         name: "".to_string(),
         cert_type: "".to_string(),
         data: "".to_string(),
+        enabled: true,
     };
 
     match args[0] {
@@ -22,6 +23,8 @@ pub fn certificate(args: &[&str]) {
         "delete" => certificate.delete(&args[1..]),
         "list" => certificate.list(&args[1..]),
         "get" => certificate.get(&args[1..]),
+        "disable" => certificate.disable(&args[1..]),
+        "enable" => certificate.enable(&args[1..]),
         _ => println!("Unknown command: {}", args[0]),
     }
 }
@@ -97,8 +100,43 @@ impl Certificate {
         let res = self.db_get();
 
         match res {
-            Ok(value) => println!("{}", value),
+            Ok(value) => {
+                println!("Enabled: {}", value.0);
+                println!("{}", value.1);
+            }
             Err(e) => println!("Error getting certificate: {}", e),
+        }
+    }
+
+    fn disable(&mut self, args: &[&str]) {
+        check_args(2, args);
+
+        self.vault_name = args[0].to_string();
+        self.name = args[1].to_string();
+
+        println!("Disabling certificate: {:?}", self.name);
+
+        let res = self.db_disable();
+
+        match res {
+            Ok(_) => println!("Certificate disabled"),
+            Err(e) => println!("Error disabling certificate: {}", e),
+        }
+    }
+
+    fn enable(&mut self, args: &[&str]) {
+        check_args(2, args);
+
+        self.vault_name = args[0].to_string();
+        self.name = args[1].to_string();
+
+        println!("Enabling certificate: {:?}", self.name);
+
+        let res = self.db_enable();
+
+        match res {
+            Ok(_) => println!("Certificate enabled"),
+            Err(e) => println!("Error enabling certificate: {}", e),
         }
     }
 }
