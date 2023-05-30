@@ -79,7 +79,7 @@ impl secret::Secret {
         let res = self.db_get();
 
         match res {
-            Ok(data) => data.iter().for_each(|d| println!("{}", d)),
+            Ok(data) => println!("{}", data),
             Err(e) => println!("Error reading secret {}", e),
         }
     }

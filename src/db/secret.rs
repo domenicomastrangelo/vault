@@ -73,22 +73,18 @@ impl Secret {
         }
     }
 
-    pub fn db_get(&self) -> Result<Vec<String>, Box<dyn Error>> {
+    pub fn db_get(&self) -> Result<String, Box<dyn Error>> {
         let conn = connect()?;
 
         let mut stmt = conn.prepare(
-            "SELECT value FROM secrets WHERE name = ? AND vault_id = (SELECT id FROM vaults WHERE name = ? LIMIT 1)",
+            "SELECT value FROM secrets WHERE name = ? AND vault_id = (SELECT id FROM vaults WHERE name = ? LIMIT 1) LIMIT 1",
         )?;
 
-        let mut values = Vec::new();
+        // let row = stmt.query_map(params![self.name, self.vault], |row| Ok(row.get(0)?))?;
 
-        let rows = stmt.query_map(params![self.name, self.vault], |row| Ok(row.get(0)?))?;
+        let value = stmt.query_row(params![self.name, self.vault], |row| row.get(0));
 
-        for row in rows {
-            values.push(row?);
-        }
-
-        Ok(values)
+        Ok(value?)
     }
 }
 
@@ -162,6 +158,86 @@ mod tests {
         match res {
             Ok(r) => assert_eq!(r, 1),
             Err(e) => panic!("Failed to create secret {}", e),
+        }
+
+        let res = destroy_vault(vault_name.to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to destroy vault {}", e),
+        }
+    }
+
+    #[test]
+    fn test_db_delete() {
+        let vault_name = "test_secret_db_delete";
+        let secret_name = "test_secret_db_delete";
+
+        let res = setup_vault(vault_name.to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to setup vault: {}", e),
+        }
+
+        let secret = Secret {
+            name: secret_name.to_string(),
+            value: "test".to_string(),
+            vault: vault_name.to_string(),
+        };
+
+        let res = secret.db_create();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to create secret {}", e),
+        }
+
+        let res = secret.db_delete();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to delete secret {}", e),
+        }
+
+        let res = destroy_vault(vault_name.to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to destroy vault {}", e),
+        }
+    }
+
+    #[test]
+    fn test_db_get() {
+        let vault_name = "test_secret_db_get";
+        let secret_name = "test_secret_db_get";
+
+        let res = setup_vault(vault_name.to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to setup vault: {}", e),
+        }
+
+        let secret = Secret {
+            name: secret_name.to_string(),
+            value: "test".to_string(),
+            vault: vault_name.to_string(),
+        };
+
+        let res = secret.db_create();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to create secret {}", e),
+        }
+
+        let res = secret.db_get();
+
+        match res {
+            Ok(r) => assert_eq!(r, "test".to_string()),
+            Err(e) => panic!("Failed to get secret {}", e),
         }
 
         let res = destroy_vault(vault_name.to_string());
