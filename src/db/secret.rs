@@ -74,16 +74,18 @@ impl Secret {
         }
     }
 
-    pub fn db_get(&self) -> Result<String, Box<dyn Error>> {
+    pub fn db_get(&self) -> Result<(String, bool), Box<dyn Error>> {
         let conn = connect()?;
 
         let mut stmt = conn.prepare(
-            "SELECT value FROM secrets WHERE name = ? AND vault_id = (SELECT id FROM vaults WHERE name = ? LIMIT 1) LIMIT 1",
+            "SELECT value, enabled FROM secrets WHERE name = ? AND vault_id = (SELECT id FROM vaults WHERE name = ? LIMIT 1) LIMIT 1",
         )?;
 
         // let row = stmt.query_map(params![self.name, self.vault], |row| Ok(row.get(0)?))?;
 
-        let value = stmt.query_row(params![self.name, self.vault], |row| row.get(0));
+        let value = stmt.query_row(params![self.name, self.vault], |row| {
+            Ok((row.get(0)?, row.get(1)?))
+        });
 
         Ok(value?)
     }
@@ -215,7 +217,7 @@ mod tests {
 
         destroy_vault(vault_name.to_string());
 
-        assert_eq!(secret_from_db, "test".to_string())
+        assert_eq!(secret_from_db.0, "test".to_string())
     }
 
     #[test]

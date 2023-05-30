@@ -82,8 +82,8 @@ impl secret::Secret {
 
         match res {
             Ok(data) => {
-                println!("Enabled: {}", self.enabled);
-                println!("Secret: {}", data)
+                println!("Enabled: {}", data.1);
+                println!("Secret: {}", data.0)
             }
             Err(e) => println!("Error reading secret {}", e),
         }
