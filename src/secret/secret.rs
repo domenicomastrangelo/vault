@@ -10,6 +10,7 @@ pub fn secret(args: &[&str]) {
         name: "".to_owned(),
         value: "".to_owned(),
         vault: args[1].to_string(),
+        enabled: true,
     };
 
     if args.len() >= 3 {

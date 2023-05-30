@@ -10,6 +10,7 @@ pub struct Secret {
     pub name: String,
     pub value: String,
     pub vault: String,
+    pub enabled: bool,
 }
 
 impl Secret {
@@ -125,6 +126,7 @@ mod tests {
             name: secret_name.to_string(),
             value: "test".to_string(),
             vault: vault_name.to_string(),
+            enabled: true,
         };
 
         let res = secret.db_create();
@@ -150,6 +152,7 @@ mod tests {
             name: secret_name.to_string(),
             value: "test".to_string(),
             vault: vault_name.to_string(),
+            enabled: true,
         };
 
         let res = secret.db_create();
@@ -172,6 +175,7 @@ mod tests {
             name: secret_name.to_string(),
             value: "test".to_string(),
             vault: vault_name.to_string(),
+            enabled: true,
         };
 
         let res = secret.db_create();
@@ -198,6 +202,7 @@ mod tests {
             name: secret_name.to_string(),
             value: "test".to_string(),
             vault: vault_name.to_string(),
+            enabled: true,
         };
 
         let res = secret.db_create();
@@ -224,6 +229,7 @@ mod tests {
             name: secret_name.to_string(),
             value: "test".to_string(),
             vault: vault_name.to_string(),
+            enabled: true,
         };
 
         let res = secret.db_create();
