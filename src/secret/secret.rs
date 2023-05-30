@@ -2,7 +2,7 @@ use crate::db::secret;
 
 pub fn secret(args: &[&str]) {
     if args.len() < 2 {
-        println!("Usage: secret [create,delete,list,read,update] <vault name> <secret name>");
+        println!("Usage: secret [create,delete,list,read,update,disable,enable] <vault name> <secret name>");
         return;
     }
 
@@ -23,6 +23,7 @@ pub fn secret(args: &[&str]) {
         "list" => secret.list(),
         "get" => secret.get(),
         "disable" => secret.disable(),
+        "enable" => secret.enable(),
         _ => println!("Unknown command: {}", args[0]),
     }
 }
@@ -97,6 +98,17 @@ impl secret::Secret {
         match res {
             Ok(_) => println!("Secret disabled"),
             Err(e) => println!("Error disabling secret {}", e),
+        }
+    }
+
+    fn enable(&self) {
+        println!("Enabling secret {}", self.name);
+
+        let res = self.db_enable();
+
+        match res {
+            Ok(_) => println!("Secret enabled"),
+            Err(e) => println!("Error enabling secret {}", e),
         }
     }
 }
