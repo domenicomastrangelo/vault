@@ -7,7 +7,6 @@ use std::io::Error as IoError;
 
 pub struct Vault {
     pub name: String,
-    pub id: u64,
 }
 
 impl Vault {
@@ -104,7 +103,6 @@ mod tests {
 
         let v = Vault {
             name: vault_name.to_string(),
-            id: 0,
         };
 
         let res = v.db_list();
@@ -123,7 +121,6 @@ mod tests {
         let vault_name = "test_vault_db_create";
         let v = Vault {
             name: vault_name.to_string(),
-            id: 0,
         };
 
         let res = v.db_create();
@@ -143,7 +140,6 @@ mod tests {
 
         let v = Vault {
             name: vault_name.to_string(),
-            id: 0,
         };
 
         let res = v.db_update(&[vault_name, vault_name_new]);
@@ -168,7 +164,6 @@ mod tests {
 
         let v = Vault {
             name: vault_name.to_string(),
-            id: 0,
         };
 
         let res = v.db_delete();

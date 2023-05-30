@@ -1,10 +1,7 @@
 use crate::db::vault::Vault;
 
 pub fn setup_vault(vault_name: String) {
-    let v = Vault {
-        id: 0,
-        name: vault_name,
-    };
+    let v = Vault { name: vault_name };
 
     let res = v.db_create();
 
@@ -12,10 +9,7 @@ pub fn setup_vault(vault_name: String) {
 }
 
 pub fn destroy_vault(vault_name: String) {
-    let v = Vault {
-        id: 0,
-        name: vault_name,
-    };
+    let v = Vault { name: vault_name };
 
     let res = v.db_delete();
 

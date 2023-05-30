@@ -5,7 +5,6 @@ pub fn vault(args: &mut [&str]) {
         if args[0] == "list" {
             let vault = vault::Vault {
                 name: "".to_string(),
-                id: 0,
             };
 
             vault.list();
@@ -19,7 +18,6 @@ pub fn vault(args: &mut [&str]) {
 
     let mut vault = vault::Vault {
         name: args[1].to_string(),
-        id: 0,
     };
 
     match args[0] {
