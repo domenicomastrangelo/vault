@@ -116,11 +116,11 @@ mod tests {
 
         let found_string = res.unwrap_or_else(|e| panic!("Failed to list secrets: {}", e));
 
-        assert!(found_string.contains(&secret_name.to_string()));
-
         let res = destroy_vault(vault_name.to_string());
 
         res.unwrap_or_else(|e| panic!("Failed to destroy vault: {}", e));
+
+        assert!(found_string.contains(&secret_name.to_string()));
     }
 
     #[test]
