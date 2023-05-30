@@ -128,14 +128,12 @@ mod tests {
 
         let res = cert.db_create();
 
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        let certificate_created =
+            res.unwrap_or_else(|e| panic!("Failed to create certificate: {}", e));
 
         destroy_vault(vault_name.to_string());
+
+        assert_eq!(certificate_created, 1);
     }
 
     #[test]
@@ -153,12 +151,7 @@ mod tests {
 
         let res = cert.db_create();
 
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        res.unwrap_or_else(|e| panic!("Failed to create certificate: {}", e));
 
         let cert = Certificate {
             vault_name: vault_name.to_string(),
@@ -169,27 +162,20 @@ mod tests {
 
         let res = cert.db_update();
 
-        match res {
-            // r in this case is the row ID, not the number of rows affected
-            Ok(r) => assert!(r > 0),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        let certificate_updated =
+            res.unwrap_or_else(|e| panic!("Failed to update certificate: {}", e));
+
+        assert_eq!(certificate_updated, 1);
 
         let res = cert.db_list();
 
-        match res {
-            Ok(r) => {
-                let found_string = r.iter().find(|&x| x == &certificate_name.to_string());
-                assert!(found_string.is_some());
-            }
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        let list = res.unwrap_or_else(|e| panic!("Failed to list certificates: {}", e));
+
+        let found_string = list.iter().find(|&x| x == &certificate_name.to_string());
 
         destroy_vault(vault_name.to_string());
+
+        assert!(found_string.is_some());
     }
 
     #[test]
@@ -207,23 +193,16 @@ mod tests {
 
         let res = cert.db_create();
 
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        res.unwrap_or_else(|e| panic!("Failed to create certificate: {}", e));
 
         let res = cert.db_delete();
 
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        let certificate_deleted =
+            res.unwrap_or_else(|e| panic!("Failed to delete certificate: {}", e));
 
         destroy_vault(vault_name.to_string());
+
+        assert_eq!(certificate_deleted, 1);
     }
 
     #[test]
@@ -241,26 +220,16 @@ mod tests {
 
         let res = cert.db_create();
 
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        res.unwrap_or_else(|e| panic!("Failed to create certificate: {}", e));
 
         let res = cert.db_list();
 
-        match res {
-            Ok(r) => {
-                let found_string = r.iter().find(|&x| x == &certificate_name.to_string());
+        let list = res.unwrap_or_else(|e| panic!("Failed to list certificates: {}", e));
 
-                assert!(found_string.is_some());
-            }
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        let found_string = list.iter().find(|&x| x == &certificate_name.to_string());
 
         destroy_vault(vault_name.to_string());
+
+        assert!(found_string.is_some());
     }
 }
