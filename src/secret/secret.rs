@@ -81,7 +81,10 @@ impl secret::Secret {
         let res = self.db_get();
 
         match res {
-            Ok(data) => println!("{}", data),
+            Ok(data) => {
+                println!("Enabled: {}", self.enabled);
+                println!("Secret: {}", data)
+            }
             Err(e) => println!("Error reading secret {}", e),
         }
     }
