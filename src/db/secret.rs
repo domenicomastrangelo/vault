@@ -131,12 +131,44 @@ mod tests {
             }
             Err(e) => panic!("Failed to list secrets: {}", e),
         }
-        println!("here");
+
         let res = destroy_vault(vault_name.to_string());
 
         match res {
             Ok(r) => assert_eq!(r, 1),
             Err(e) => panic!("Failed to destroy vault: {}", e),
+        }
+    }
+
+    #[test]
+    fn test_db_create() {
+        let vault_name = "test_secret_db_create";
+        let secret_name = "test_secret_db_create";
+        let res = setup_vault(vault_name.to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to setup vault: {}", e),
+        }
+
+        let secret = Secret {
+            name: secret_name.to_string(),
+            value: "test".to_string(),
+            vault: vault_name.to_string(),
+        };
+
+        let res = secret.db_create();
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to create secret {}", e),
+        }
+
+        let res = destroy_vault(vault_name.to_string());
+
+        match res {
+            Ok(r) => assert_eq!(r, 1),
+            Err(e) => panic!("Failed to destroy vault {}", e),
         }
     }
 }
