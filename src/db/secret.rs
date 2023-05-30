@@ -98,9 +98,7 @@ mod tests {
     fn test_db_list() {
         let vault_name = "test_secret_db_list";
         let secret_name = "test_secret_db_list";
-        let res = setup_vault(vault_name.to_string());
-
-        res.unwrap_or_else(|e| panic!("Failed to setup vault: {}", e));
+        setup_vault(vault_name.to_string());
 
         let secret = Secret {
             name: secret_name.to_string(),
@@ -116,9 +114,7 @@ mod tests {
 
         let found_string = res.unwrap_or_else(|e| panic!("Failed to list secrets: {}", e));
 
-        let res = destroy_vault(vault_name.to_string());
-
-        res.unwrap_or_else(|e| panic!("Failed to destroy vault: {}", e));
+        destroy_vault(vault_name.to_string());
 
         assert!(found_string.contains(&secret_name.to_string()));
     }
@@ -127,9 +123,7 @@ mod tests {
     fn test_db_create() {
         let vault_name = "test_secret_db_create";
         let secret_name = "test_secret_db_create";
-        let res = setup_vault(vault_name.to_string());
-
-        res.unwrap_or_else(|e| panic!("Failed to setup vault: {}", e));
+        setup_vault(vault_name.to_string());
 
         let secret = Secret {
             name: secret_name.to_string(),
@@ -141,9 +135,7 @@ mod tests {
 
         let secret_created = res.unwrap_or_else(|e| panic!("Failed to create secret: {}", e));
 
-        let res = destroy_vault(vault_name.to_string());
-
-        res.unwrap_or_else(|e| panic!("Failed to destroy vault: {}", e));
+        destroy_vault(vault_name.to_string());
 
         assert_eq!(secret_created, 1);
     }
@@ -153,9 +145,7 @@ mod tests {
         let vault_name = "test_secret_db_delete";
         let secret_name = "test_secret_db_delete";
 
-        let res = setup_vault(vault_name.to_string());
-
-        res.unwrap_or_else(|e| panic!("Failed to setup vault: {}", e));
+        setup_vault(vault_name.to_string());
 
         let secret = Secret {
             name: secret_name.to_string(),
@@ -171,9 +161,7 @@ mod tests {
 
         let secret_deleted = res.unwrap_or_else(|e| panic!("Failed to delete secret: {}", e));
 
-        let res = destroy_vault(vault_name.to_string());
-
-        res.unwrap_or_else(|e| panic!("Failed to destroy vault: {}", e));
+        destroy_vault(vault_name.to_string());
 
         assert_eq!(secret_deleted, 1);
     }
@@ -183,9 +171,7 @@ mod tests {
         let vault_name = "test_secret_db_get";
         let secret_name = "test_secret_db_get";
 
-        let res = setup_vault(vault_name.to_string());
-
-        res.unwrap_or_else(|e| panic!("Failed to setup vault: {}", e));
+        setup_vault(vault_name.to_string());
 
         let secret = Secret {
             name: secret_name.to_string(),
@@ -201,9 +187,7 @@ mod tests {
 
         let secret_from_db = res.unwrap_or_else(|e| panic!("Failed to get secret: {}", e));
 
-        let res = destroy_vault(vault_name.to_string());
-
-        res.unwrap_or_else(|e| panic!("Failed to destroy vault: {}", e));
+        destroy_vault(vault_name.to_string());
 
         assert_eq!(secret_from_db, "test".to_string())
     }

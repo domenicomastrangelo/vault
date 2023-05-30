@@ -117,14 +117,7 @@ mod tests {
     fn test_db_create() {
         let vault_name = "test_certificate_db_create";
         let certificate_name = "test_db_create";
-        let setup = setup_vault(vault_name.to_string());
-
-        match setup {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        setup_vault(vault_name.to_string());
 
         let cert = Certificate {
             vault_name: vault_name.to_string(),
@@ -142,28 +135,14 @@ mod tests {
             }
         }
 
-        let res = destroy_vault(vault_name.to_string());
-
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        destroy_vault(vault_name.to_string());
     }
 
     #[test]
     fn test_db_update() {
         let vault_name = "test_certificate_db_update";
         let certificate_name = "test_db_update";
-        let setup = setup_vault(vault_name.to_string());
-
-        match setup {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        setup_vault(vault_name.to_string());
 
         let cert = Certificate {
             vault_name: vault_name.to_string(),
@@ -210,28 +189,14 @@ mod tests {
             }
         }
 
-        let res = destroy_vault(vault_name.to_string());
-
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        destroy_vault(vault_name.to_string());
     }
 
     #[test]
     fn test_db_delete() {
         let vault_name = "test_certificate_db_delete";
         let certificate_name = "test_db_delete";
-        let setup = setup_vault(vault_name.to_string());
-
-        match setup {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        setup_vault(vault_name.to_string());
 
         let cert = Certificate {
             vault_name: vault_name.to_string(),
@@ -258,28 +223,14 @@ mod tests {
             }
         }
 
-        let res = destroy_vault(vault_name.to_string());
-
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        destroy_vault(vault_name.to_string());
     }
 
     #[test]
     fn test_db_list() {
         let vault_name = "test_certificate_db_list";
         let certificate_name = "test_db_list";
-        let setup = setup_vault(vault_name.to_string());
-
-        match setup {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        setup_vault(vault_name.to_string());
 
         let cert = Certificate {
             vault_name: vault_name.to_string(),
@@ -310,13 +261,6 @@ mod tests {
             }
         }
 
-        let res = destroy_vault(vault_name.to_string());
-
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => {
-                println!("{}", e);
-            }
-        }
+        destroy_vault(vault_name.to_string());
     }
 }

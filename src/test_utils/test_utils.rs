@@ -1,21 +1,23 @@
-use std::error::Error;
-
 use crate::db::vault::Vault;
 
-pub fn setup_vault(vault_name: String) -> Result<usize, Box<dyn Error>> {
+pub fn setup_vault(vault_name: String) {
     let v = Vault {
         id: 0,
         name: vault_name,
     };
 
-    v.db_create()
+    let res = v.db_create();
+
+    res.unwrap_or_else(|e| panic!("Failed to setup vault: {}", e));
 }
 
-pub fn destroy_vault(vault_name: String) -> Result<usize, Box<dyn Error>> {
+pub fn destroy_vault(vault_name: String) {
     let v = Vault {
         id: 0,
         name: vault_name,
     };
 
-    v.db_delete()
+    let res = v.db_delete();
+
+    res.unwrap_or_else(|e| panic!("Failed to destroy vault: {}", e));
 }
