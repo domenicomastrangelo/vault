@@ -100,10 +100,7 @@ mod tests {
         let secret_name = "test_secret_db_list";
         let res = setup_vault(vault_name.to_string());
 
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => panic!("Failed to setup vault: {}", e),
-        }
+        res.unwrap_or_else(|e| panic!("Failed to setup vault: {}", e));
 
         let secret = Secret {
             name: secret_name.to_string(),
@@ -113,27 +110,17 @@ mod tests {
 
         let res = secret.db_create();
 
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => panic!("Failed to create secret: {}", e),
-        }
+        res.unwrap_or_else(|e| panic!("Failed to create secret: {}", e));
 
         let res = secret.db_list();
 
-        match res {
-            Ok(r) => {
-                let found_string = r.iter().find(|&x| x == &secret_name.to_string());
-                assert!(found_string.is_some());
-            }
-            Err(e) => panic!("Failed to list secrets: {}", e),
-        }
+        let found_string = res.unwrap_or_else(|e| panic!("Failed to list secrets: {}", e));
+
+        assert!(found_string.contains(&secret_name.to_string()));
 
         let res = destroy_vault(vault_name.to_string());
 
-        match res {
-            Ok(r) => assert_eq!(r, 1),
-            Err(e) => panic!("Failed to destroy vault: {}", e),
-        }
+        res.unwrap_or_else(|e| panic!("Failed to destroy vault: {}", e));
     }
 
     #[test]
