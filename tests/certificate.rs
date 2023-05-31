@@ -34,7 +34,6 @@ fn test_create_list_and_delete() {
         .expect("Failed to execute command");
 
     let out = String::from_utf8(output.stdout).expect("Not a UTF8 string");
-    log::error!(">>> {}", out);
 
     assert!(output.status.success());
     assert!(out.contains(vault_name));
