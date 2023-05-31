@@ -10,7 +10,6 @@ use secret::secret::secret;
 mod db;
 use db::db as database;
 
-mod common;
 mod test_utils;
 
 fn main() {

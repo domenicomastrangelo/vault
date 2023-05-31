@@ -7,8 +7,8 @@ pub fn secret(args: &[&str]) {
 
     match secret {
         Ok(ref mut secret) => match args[0] {
-            "create" => secret.create(&args[1..]),
-            "delete" => secret.delete(&args[1..]),
+            "create" => secret.create(),
+            "delete" => secret.delete(),
             "list" => secret.list(),
             "get" => secret.get(),
             "disable" => secret.disable(),
@@ -41,8 +41,8 @@ fn parse_args(args: &[&str]) -> Result<secret::Secret, Box<dyn Error>> {
 }
 
 impl secret::Secret {
-    fn create(&mut self, args: &[&str]) {
-        println!("Creating secret: {:?}", args[1]);
+    fn create(&mut self) {
+        println!("Creating secret: {:?}", self.name);
 
         let mut value = String::new();
 
@@ -62,8 +62,8 @@ impl secret::Secret {
         }
     }
 
-    fn delete(&self, args: &[&str]) {
-        println!("Secret delete: {:?}", args);
+    fn delete(&self) {
+        println!("Secret delete: {:?}", self.name);
 
         let res = self.db_delete();
 

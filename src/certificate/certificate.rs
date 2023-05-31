@@ -2,19 +2,17 @@ use std::error::Error;
 
 use crate::db::certificate::Certificate;
 
-use crate::common::utils::check_args;
-
 pub fn certificate(args: &[&str]) {
     let mut certificate = parse_args(args);
 
     match certificate {
         Ok(ref mut certificate) => match args[0] {
-            "create" => certificate.create(&args[1..]),
-            "delete" => certificate.delete(&args[1..]),
-            "list" => certificate.list(&args[1..]),
-            "get" => certificate.get(&args[1..]),
-            "disable" => certificate.disable(&args[1..]),
-            "enable" => certificate.enable(&args[1..]),
+            "create" => certificate.create(),
+            "delete" => certificate.delete(),
+            "list" => certificate.list(),
+            "get" => certificate.get(),
+            "disable" => certificate.disable(),
+            "enable" => certificate.enable(),
             _ => println!("Unknown command: {}", args[0]),
         },
         Err(e) => println!("{}", e),
@@ -41,15 +39,15 @@ fn parse_args(args: &[&str]) -> Result<Certificate, Box<dyn Error>> {
         certificate.name = args[2].to_string();
     }
 
+    if args.len() >= 4 {
+        certificate.cert_type = args[3].to_string();
+    }
+
     Ok(certificate)
 }
 
 impl Certificate {
-    fn list(&mut self, args: &[&str]) {
-        check_args(1, args);
-
-        self.vault_name = args[0].to_string();
-
+    fn list(&self) {
         println!("Listing certificates");
 
         let values = self.db_list();
@@ -62,15 +60,8 @@ impl Certificate {
         }
     }
 
-    fn create<'a>(&'a mut self, args: &[&str]) {
-        check_args(3, args);
-
-        self.vault_name = args[0].to_string();
-        self.cert_type = args[1].to_string();
-        self.name = args[2].to_string();
-
+    fn create<'a>(&'a mut self) {
         println!("Creating certificate: {}", self.name);
-
         println!("Insert the certificate data here:");
 
         let mut value = String::new();
@@ -88,12 +79,7 @@ impl Certificate {
         }
     }
 
-    fn delete(&mut self, args: &[&str]) {
-        check_args(1, args);
-
-        self.vault_name = args[0].to_string();
-        self.name = args[1].to_string();
-
+    fn delete(&mut self) {
         println!("Deleting certificate: {:?}", self.name);
 
         let res = self.db_delete();
@@ -104,12 +90,7 @@ impl Certificate {
         }
     }
 
-    fn get(&mut self, args: &[&str]) {
-        check_args(2, args);
-
-        self.vault_name = args[0].to_string();
-        self.name = args[1].to_string();
-
+    fn get(&mut self) {
         println!("Getting certificate: {:?}", self.name);
 
         let res = self.db_get();
@@ -123,12 +104,7 @@ impl Certificate {
         }
     }
 
-    fn disable(&mut self, args: &[&str]) {
-        check_args(2, args);
-
-        self.vault_name = args[0].to_string();
-        self.name = args[1].to_string();
-
+    fn disable(&mut self) {
         println!("Disabling certificate: {:?}", self.name);
 
         let res = self.db_disable();
@@ -139,12 +115,7 @@ impl Certificate {
         }
     }
 
-    fn enable(&mut self, args: &[&str]) {
-        check_args(2, args);
-
-        self.vault_name = args[0].to_string();
-        self.name = args[1].to_string();
-
+    fn enable(&mut self) {
         println!("Enabling certificate: {:?}", self.name);
 
         let res = self.db_enable();
