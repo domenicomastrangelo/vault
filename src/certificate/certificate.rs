@@ -1,32 +1,47 @@
+use std::error::Error;
+
 use crate::db::certificate::Certificate;
 
 use crate::common::utils::check_args;
 
 pub fn certificate(args: &[&str]) {
+    let mut certificate = parse_args(args);
+
+    match certificate {
+        Ok(ref mut certificate) => match args[0] {
+            "create" => certificate.create(&args[1..]),
+            "delete" => certificate.delete(&args[1..]),
+            "list" => certificate.list(&args[1..]),
+            "get" => certificate.get(&args[1..]),
+            "disable" => certificate.disable(&args[1..]),
+            "enable" => certificate.enable(&args[1..]),
+            _ => println!("Unknown command: {}", args[0]),
+        },
+        Err(e) => println!("{}", e),
+    }
+}
+
+fn parse_args(args: &[&str]) -> Result<Certificate, Box<dyn Error>> {
     if args.len() < 2 {
-        println!(
-            "Usage: certificate [create,delete,list,get,update] <vault_name> <rsa, ecdsa> <certificate name>"
+        return Err(
+            "Usage: certificate [create,delete,list,get,update] <vault_name> <certificate_name>"
+                .into(),
         );
-        return;
     }
 
     let mut certificate = Certificate {
-        vault_name: "".to_string(),
+        vault_name: args[1].to_string(),
         name: "".to_string(),
         cert_type: "".to_string(),
         data: "".to_string(),
         enabled: true,
     };
 
-    match args[0] {
-        "create" => certificate.create(&args[1..]),
-        "delete" => certificate.delete(&args[1..]),
-        "list" => certificate.list(&args[1..]),
-        "get" => certificate.get(&args[1..]),
-        "disable" => certificate.disable(&args[1..]),
-        "enable" => certificate.enable(&args[1..]),
-        _ => println!("Unknown command: {}", args[0]),
+    if args.len() >= 3 {
+        certificate.name = args[2].to_string();
     }
+
+    Ok(certificate)
 }
 
 impl Certificate {

@@ -1,30 +1,31 @@
+use std::error::Error;
+
 use crate::db::vault;
 
 pub fn vault(args: &mut [&str]) {
+    let mut vault = parse_args(args);
+
+    match vault {
+        Ok(ref mut vault) => match args[0] {
+            "create" => vault.create(&args[1..]),
+            "delete" => vault.delete(&args[1..]),
+            "list" => vault.list(),
+            _ => println!("Unknown command: {}", args[0]),
+        },
+        Err(e) => println!("{}", e),
+    }
+}
+
+fn parse_args(args: &[&str]) -> Result<vault::Vault, Box<dyn Error>> {
     if args.len() < 2 {
-        if args[0] == "list" {
-            let vault = vault::Vault {
-                name: "".to_string(),
-            };
-
-            vault.list();
-
-            return;
-        } else {
-            println!("Usage: vault [create,delete,list,read,update] <vault name>");
-            return;
-        }
+        return Err("Usage: vault [create,delete,list] <vault_name>".into());
     }
 
-    let mut vault = vault::Vault {
+    let vault = vault::Vault {
         name: args[1].to_string(),
     };
 
-    match args[0] {
-        "create" => vault.create(&mut args[1..]),
-        "delete" => vault.delete(&args[1..]),
-        _ => println!("Unknown command: {}", args[0]),
-    }
+    Ok(vault)
 }
 
 impl vault::Vault {
@@ -35,7 +36,7 @@ impl vault::Vault {
         match res {
             Ok(vaults) => {
                 for vault in vaults {
-                    println!("Vault: {}", vault);
+                    println!("{}", vault);
                 }
             }
             Err(e) => println!("Error listing vaults: {}", e),

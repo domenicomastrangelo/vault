@@ -1,13 +1,33 @@
+use std::error::Error;
+
 use crate::db::secret;
 
 pub fn secret(args: &[&str]) {
+    let mut secret = parse_args(args);
+
+    match secret {
+        Ok(ref mut secret) => match args[0] {
+            "create" => secret.create(&args[1..]),
+            "delete" => secret.delete(&args[1..]),
+            "list" => secret.list(),
+            "get" => secret.get(),
+            "disable" => secret.disable(),
+            "enable" => secret.enable(),
+            _ => println!("Unknown command: {}", args[0]),
+        },
+        Err(e) => println!("{}", e),
+    }
+}
+
+fn parse_args(args: &[&str]) -> Result<secret::Secret, Box<dyn Error>> {
     if args.len() < 2 {
-        println!("Usage: secret [create,delete,list,read,update,disable,enable] <vault name> <secret name>");
-        return;
+        return Err(
+            "Usage: secret [create,delete,list,get,update] <vault_name> <secret_name>".into(),
+        );
     }
 
     let mut secret = secret::Secret {
-        name: "".to_owned(),
+        name: args[2].to_string(),
         value: "".to_owned(),
         vault: args[1].to_string(),
         enabled: true,
@@ -17,15 +37,7 @@ pub fn secret(args: &[&str]) {
         secret.name = args[2].to_string();
     }
 
-    match args[0] {
-        "create" => secret.create(&args[1..]),
-        "delete" => secret.delete(&args[1..]),
-        "list" => secret.list(),
-        "get" => secret.get(),
-        "disable" => secret.disable(),
-        "enable" => secret.enable(),
-        _ => println!("Unknown command: {}", args[0]),
-    }
+    Ok(secret)
 }
 
 impl secret::Secret {
